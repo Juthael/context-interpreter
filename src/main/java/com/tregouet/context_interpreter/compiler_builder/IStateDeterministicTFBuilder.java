@@ -11,8 +11,6 @@ public interface IStateDeterministicTFBuilder {
 	
 	Set<Map<IState, Set<IState>>> buildTrees();
 	
-	Set<Map<IState, Set<IState>>> continueTree(Set<IState> currState, Set<IState> currMaxCat);
-	
 	void makePosetAtomistic();
 
 }

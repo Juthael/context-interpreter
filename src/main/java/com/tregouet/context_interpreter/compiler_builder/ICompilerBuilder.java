@@ -9,7 +9,7 @@ import com.tregouet.context_interpreter.compiler.IState;
 import com.tregouet.context_interpreter.compiler.ITransducer;
 import com.tregouet.context_interpreter.data_types.representation.IRepresentation;
 
-public interface ICompilersBuilder {
+public interface ICompilerBuilder {
 	
 	ITransducer getNDTransducer();
 	

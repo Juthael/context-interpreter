@@ -11,8 +11,6 @@ public interface IStateDeterministicTF extends ITransitionFunc {
 	
 	Set<Set<ITransition>> buidTransitionTrees(Set<ITransition> transFromStart);
 	
-	Set<Set<ITransition>> continueTree(Set<ITransition> currTransitions, Set<ITransition> currMaxTrans);
-	
 	void removeTunnelStates();
 	
 	ITransition reduce(List<ITransition> transitionChain);
