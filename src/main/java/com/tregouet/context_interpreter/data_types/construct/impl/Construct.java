@@ -18,6 +18,15 @@ public class Construct implements IConstruct {
 		this.prog = prog;
 	}
 	
+	public Construct(String[] progStrings) {
+		prog = new ArrayList<ISymbol>();
+		for (String symString : progStrings) {
+			if (symString.equals(ISymbolSeq.PLACEHOLDER))
+				prog.add(new Variable(Variable.DEFERRED_NAMING));
+			else prog.add(new Terminal(symString));
+		}
+	}
+	
 	public Construct(ISymbolSeq symSeq) {
 		prog = new ArrayList<ISymbol>();
 		for (String stringSym : symSeq.getStringSequence()) {
@@ -28,15 +37,18 @@ public class Construct implements IConstruct {
 	}
 
 	public boolean meets(IConstruct constraint) {
-		Iterator<ISymbol> iteOnConstruct = this.getIteratorOverSymbols();
-		for (ISymbol constraintSym : constraint.getListOfSymbols()) {
-			if (!iteOnConstruct.hasNext())
-				return false;
-			while (iteOnConstruct.hasNext() && !iteOnConstruct.next().equals(constraintSym)) {
-				//do nothing
+		if (prog.size() > constraint.getListOfSymbols().size()) {
+			Iterator<ISymbol> iteOnConstruct = this.getIteratorOverSymbols();
+			for (ISymbol constraintSym : constraint.getListOfSymbols()) {
+				if (!iteOnConstruct.hasNext())
+					return false;
+				while (iteOnConstruct.hasNext() && !iteOnConstruct.next().equals(constraintSym)) {
+					//do nothing
+				}
 			}
+			return true;
 		}
-		return true;
+		else return false;
 	}
 
 	public boolean isAbstract() {
@@ -92,6 +104,17 @@ public class Construct implements IConstruct {
 		} else if (!prog.equals(other.prog))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sB = new StringBuilder();
+		for (int i = 0 ; i < prog.size() ; i++) {
+			sB.append(prog.get(i));
+			if (i < prog.size() - 1)
+				sB.append(" ");
+		}
+		return sB.toString();
 	}
 
 }

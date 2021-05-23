@@ -38,5 +38,13 @@ public class ContextObject implements IContextObject {
 	public Iterator<IConstruct> getIteratorOnConstructs() {
 		return constructs.iterator();
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sB = new StringBuilder();
+		for (IConstruct construct : constructs)
+			sB.append(construct.toString() + System.lineSeparator());
+		return sB.toString();
+	}
 
 }

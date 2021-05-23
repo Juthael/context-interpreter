@@ -10,7 +10,7 @@ import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.data_types.construct.impl.ContextObject;
 
-public class CategoryFinder implements ICatRelationBldr {
+public class CatRelationBldr implements ICatRelationBldr {
 
 	private final List<IContextObject> objects;
 	private final Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents;
@@ -23,7 +23,7 @@ public class CategoryFinder implements ICatRelationBldr {
 	private final ICategory latticeMin;
 	private final Map<ICategory, Set<ICategory>> relOverCategories;
 	
-	public CategoryFinder(List<IContextObject> objects) {
+	public CatRelationBldr(List<IContextObject> objects) {
 		this.objects = objects;
 		relOverCategories = buildCategoryLattice();
 		//yetToDo

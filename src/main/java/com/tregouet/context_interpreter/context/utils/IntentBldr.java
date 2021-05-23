@@ -1,4 +1,4 @@
-package com.tregouet.context_interpreter.context.impl;
+package com.tregouet.context_interpreter.context.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,22 +7,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.tregouet.context_interpreter.context.IIntentBldr;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.data_types.construct.impl.Construct;
 import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SubseqFinder;
 
-public class IntentBldr implements IIntentBldr {
+public class IntentBldr {
 
-	private final List<List<ISymbolSeq>> objSymbolSeqs = new ArrayList<List<ISymbolSeq>>();
-	private final Set<IConstruct> intent = new HashSet<IConstruct>();
-	private final int[] arrayDimensions;
-	private final int[] coords;
-	private final Map<ISymbolSeq, Set<ISymbolSeq>> subsqToMaxSubsq = new HashMap<ISymbolSeq, Set<ISymbolSeq>>();
+	private static List<List<ISymbolSeq>> objSymbolSeqs = new ArrayList<List<ISymbolSeq>>();
+	private static Set<IConstruct> intent = new HashSet<IConstruct>();
+	private static int[] arrayDimensions = null;
+	private static int[] coords = null;
+	private static Map<ISymbolSeq, Set<ISymbolSeq>> subsqToMaxSubsq = new HashMap<ISymbolSeq, Set<ISymbolSeq>>();
 	
-	public IntentBldr(List<IContextObject> extent) {
+	private IntentBldr(List<IContextObject> extent) {
+	}
+
+	public static Set<IConstruct> getIntent(List<IContextObject> extent) {
 		arrayDimensions = new int[extent.size()];
 		coords = new int[extent.size()];
 		for (int i = 0 ; i < extent.size() ; i++) {
@@ -43,13 +45,14 @@ public class IntentBldr implements IIntentBldr {
 				intent.add(new Construct(maxSubseq));
 			}
 		}
-	}
-
-	public Set<IConstruct> getIntent(Set<IContextObject> objects) {
 		return intent;
 	}
 	
-	private void setSubsqToMaxSubsq() {
+	public static Map<ISymbolSeq, Set<ISymbolSeq>> getSubsqToMaxSubsq(){
+		return subsqToMaxSubsq;
+	}
+	
+	private static void setSubsqToMaxSubsq() {
 		coords[0] = -1;
 		while (nextCoord()) {
 			List<ISymbolSeq> tuple = new ArrayList<ISymbolSeq>();
@@ -68,7 +71,7 @@ public class IntentBldr implements IIntentBldr {
 		}
 	}
 	
-	private final boolean nextCoord(){
+	private static boolean nextCoord(){
 		for(int i=0;i<coords.length;++i) {
 			if (++coords[i] < arrayDimensions[i])
 				return true;
@@ -77,7 +80,7 @@ public class IntentBldr implements IIntentBldr {
 	    return false;
     }
 	
-	private Set<ISymbolSeq> removeNonMaxSeqs(Set<ISymbolSeq> seqs){
+	private static Set<ISymbolSeq> removeNonMaxSeqs(Set<ISymbolSeq> seqs){
 		List<ISymbolSeq> seqList = new ArrayList<ISymbolSeq>(seqs);
 		int idx1 = 0;
 		boolean idx1SeqRemoved = false;
@@ -85,7 +88,7 @@ public class IntentBldr implements IIntentBldr {
 		int comparison;
 		while (idx1 < seqList.size()) {
 			idx2 = idx1 + 1;
-			while ((idx2 < seqList.size())  && !idx1SeqRemoved) {
+			while (!idx1SeqRemoved && (idx2 < seqList.size())) {
 				comparison = seqList.get(idx1).compareTo(seqList.get(idx2));
 				if (comparison == -1) {
 					seqList.remove(idx1);
