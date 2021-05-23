@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 
-public interface ICategoryFinder {
+public interface ICatRelationBldr {
 	
 	Map<ICategory, Set<ICategory>> getRelOverCategories();
 	

@@ -1,10 +1,12 @@
 package com.tregouet.context_interpreter.data_types.construct.impl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
+import com.tregouet.subseq_finder.ISymbolSeq;
 
 public class ContextObject implements IContextObject {
 
@@ -20,6 +22,13 @@ public class ContextObject implements IContextObject {
 
 	public List<IConstruct> getConstructs() {
 		return constructs;
+	}
+	
+	public List<ISymbolSeq> toSymbolSeqs(){
+		List<ISymbolSeq> symbolSeqs = new ArrayList<ISymbolSeq>();
+		for (IConstruct construct : constructs)
+			symbolSeqs.add(construct.toSymbolSeq());
+		return symbolSeqs;
 	}
 	
 	public String getID() {

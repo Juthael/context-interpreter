@@ -1,6 +1,4 @@
-package com.tregouet.context_interpreter.data_types;
-
-import com.tregouet.context_interpreter.data_types.construct.ISymbol;
+package com.tregouet.context_interpreter.data_types.construct;
 
 public interface IVariable extends ISymbol {
 

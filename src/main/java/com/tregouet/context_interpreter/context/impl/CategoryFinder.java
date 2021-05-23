@@ -5,12 +5,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
-import com.tregouet.context_interpreter.context.ICategoryFinder;
+import com.tregouet.context_interpreter.context.ICatRelationBldr;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.data_types.construct.impl.ContextObject;
 
-public class CategoryFinder implements ICategoryFinder {
+public class CategoryFinder implements ICatRelationBldr {
 
 	private final List<IContextObject> objects;
 	private final Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents;
