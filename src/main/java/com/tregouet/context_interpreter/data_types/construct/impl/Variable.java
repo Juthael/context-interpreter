@@ -77,5 +77,10 @@ public class Variable implements IVariable {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return Character.toString(name);
+	}
 
 }

@@ -15,16 +15,17 @@ import com.tregouet.subseq_finder.impl.SubseqFinder;
 
 public class IntentBldr {
 
-	private static List<List<ISymbolSeq>> objSymbolSeqs = new ArrayList<List<ISymbolSeq>>();
-	private static Set<IConstruct> intent = new HashSet<IConstruct>();
-	private static int[] arrayDimensions = null;
-	private static int[] coords = null;
-	private static Map<ISymbolSeq, Set<ISymbolSeq>> subsqToMaxSubsq = new HashMap<ISymbolSeq, Set<ISymbolSeq>>();
+	private static List<List<ISymbolSeq>> objSymbolSeqs;
+	private static Set<IConstruct> intent;
+	private static int[] arrayDimensions;
+	private static int[] coords;
+	private static Map<ISymbolSeq, Set<ISymbolSeq>> subsqToMaxSubsq;
 	
 	private IntentBldr(List<IContextObject> extent) {
 	}
 
 	public static Set<IConstruct> getIntent(List<IContextObject> extent) {
+		init();
 		arrayDimensions = new int[extent.size()];
 		coords = new int[extent.size()];
 		for (int i = 0 ; i < extent.size() ; i++) {
@@ -48,7 +49,24 @@ public class IntentBldr {
 		return intent;
 	}
 	
-	public static Map<ISymbolSeq, Set<ISymbolSeq>> getSubsqToMaxSubsq(){
+	//for unit test use only
+	public static Map<ISymbolSeq, Set<ISymbolSeq>> getSubsqToMaxSubsq(List<IContextObject> extent){
+		init();
+		arrayDimensions = new int[extent.size()];
+		coords = new int[extent.size()];
+		for (int i = 0 ; i < extent.size() ; i++) {
+			List<ISymbolSeq> currObjConstructs = extent.get(i).toSymbolSeqs();
+			arrayDimensions[i] = currObjConstructs.size();
+			objSymbolSeqs.add(currObjConstructs);
+		}
+		for (List<ISymbolSeq> obj : objSymbolSeqs) {
+			for (ISymbolSeq objSymSeq : obj) {
+				if (!subsqToMaxSubsq.containsKey(objSymSeq)) {
+					subsqToMaxSubsq.put(objSymSeq, new HashSet<ISymbolSeq>());
+				}
+			}
+		}
+		setSubsqToMaxSubsq();
 		return subsqToMaxSubsq;
 	}
 	
@@ -66,9 +84,8 @@ public class IntentBldr {
 				subsqToMaxSubsq.get(tupleElmnt).addAll(tupleMaxSubseqs);
 			}
 		}
-		for (ISymbolSeq seq : subsqToMaxSubsq.keySet()) {
+		for (ISymbolSeq seq : subsqToMaxSubsq.keySet())
 			subsqToMaxSubsq.put(seq, removeNonMaxSeqs(subsqToMaxSubsq.get(seq)));
-		}
 	}
 	
 	private static boolean nextCoord(){
@@ -90,11 +107,11 @@ public class IntentBldr {
 			idx2 = idx1 + 1;
 			while (!idx1SeqRemoved && (idx2 < seqList.size())) {
 				comparison = seqList.get(idx1).compareTo(seqList.get(idx2));
-				if (comparison == -1) {
+				if (comparison == ISymbolSeq.SUBSEQ_OF) {
 					seqList.remove(idx1);
 					idx1SeqRemoved = true;
 				}
-				else if (comparison == 1) {
+				else if (comparison == ISymbolSeq.SUPERSEQ_OF) {
 					seqList.remove(idx2);
 				}
 				else idx2++;
@@ -104,6 +121,14 @@ public class IntentBldr {
 			else idx1++;
 		}
 		return new HashSet<ISymbolSeq>(seqList);
+	}
+	
+	private static void init() {
+		objSymbolSeqs = new ArrayList<List<ISymbolSeq>>();
+		intent = new HashSet<IConstruct>();
+		arrayDimensions = null;
+		coords = null;
+		subsqToMaxSubsq = new HashMap<ISymbolSeq, Set<ISymbolSeq>>();
 	}
 
 }

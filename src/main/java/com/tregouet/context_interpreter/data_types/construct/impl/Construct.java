@@ -38,17 +38,17 @@ public class Construct implements IConstruct {
 
 	public boolean meets(IConstruct constraint) {
 		if (prog.size() > constraint.getListOfSymbols().size()) {
-			Iterator<ISymbol> iteOnConstruct = this.getIteratorOverSymbols();
-			for (ISymbol constraintSym : constraint.getListOfSymbols()) {
-				if (!iteOnConstruct.hasNext())
-					return false;
-				while (iteOnConstruct.hasNext() && !iteOnConstruct.next().equals(constraintSym)) {
-					//do nothing
-				}
+			List<ISymbol> constructSymbols = this.getListOfSymbols();
+			List<ISymbol> constraintSymbols = constraint.getListOfSymbols();
+			int constraintIdx = 0;
+			for (int constructIdx = 0 ; constructIdx < constructSymbols.size() && constraintIdx < constraintSymbols.size() ; constructIdx++) {
+				if (constructSymbols.get(constructIdx).equals(constraintSymbols.get(constraintIdx)))
+					constraintIdx++;
 			}
-			return true;
+			if (constraintIdx == constraintSymbols.size())
+				return true;
 		}
-		else return false;
+		return false;
 	}
 
 	public boolean isAbstract() {
