@@ -8,7 +8,6 @@ import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.context.ICatRelationBldr;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
-import com.tregouet.context_interpreter.data_types.construct.impl.ContextObject;
 
 public class CatRelationBldr implements ICatRelationBldr {
 

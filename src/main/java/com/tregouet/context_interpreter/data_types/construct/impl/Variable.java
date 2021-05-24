@@ -44,7 +44,7 @@ public class Variable implements IVariable {
 		return true;
 	}
 
-	public int getInstantiationCount() {
+	public int getAssignmentCount() {
 		return instantiations;
 	}
 	
@@ -60,7 +60,7 @@ public class Variable implements IVariable {
 		return result;
 	}
 	
-	public void incrementInstantiationCount() {
+	public void incrementAssignmentCount() {
 		instantiations++;
 	}
 
