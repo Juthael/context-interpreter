@@ -7,9 +7,9 @@ import com.tregouet.context_interpreter.compiler.IState;
 
 public interface IStateDeterministicTFBuilder {
 	
-	Set<IStateDeterministicTF> getStateDeterministicTFs();
-	
 	Set<Map<IState, Set<IState>>> buildTrees();
+	
+	Set<IStateDeterministicTF> getStateDeterministicTFs();
 	
 	void makePosetAtomistic();
 

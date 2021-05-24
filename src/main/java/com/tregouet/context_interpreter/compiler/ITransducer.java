@@ -8,30 +8,30 @@ import com.tregouet.context_interpreter.data_types.representation.IRepresentatio
 
 public interface ITransducer {
 	
-	void reset();
-	
-	Set<IRepresentation> transduce(IConstruct construct);
-	
-	Set<IState> getStates();
-	
-	IState getStateWith(Set<IContextObject> extent);
-	
-	boolean hasStateWith(Set<IContextObject> extent);
-	
-	Set<ITransition> getTransitions();
-	
-	IState getStartState();
-	
 	IState getAcceptState();
 	
-	Set<IState> getPreAcceptStates();
+	Set<IState> getCategoryStates();
+	
+	Set<IConstruct> getInputLanguage();
 	
 	Set<IState> getObjectStates();
 	
 	IState getOmegaState();
 	
-	Set<IState> getCategoryStates();
+	Set<IState> getPreAcceptStates();
 	
-	Set<IConstruct> getInputLanguage();
+	IState getStartState();
+	
+	Set<IState> getStates();
+	
+	IState getStateWith(Set<IContextObject> extent);
+	
+	Set<ITransition> getTransitions();
+	
+	boolean hasStateWith(Set<IContextObject> extent);
+	
+	void reset();
+	
+	Set<IRepresentation> transduce(IConstruct construct);
 
 }

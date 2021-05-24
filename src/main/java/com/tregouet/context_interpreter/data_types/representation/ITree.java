@@ -10,18 +10,18 @@ import com.tregouet.context_interpreter.data_types.representation.op.IMonoBinder
 
 public interface ITree extends IRepresentation {
 	
-	IDSOperator getToken();
+	String asStringOfIDs();
 	
 	List<ITree> getChildren();
 	
-	Set<IDSOperator> getOperators();
-	
 	Set<IMonoBinderOp> getMonoBinderOp();
 	
-	void replaceMonoBinderOp(Map<IMonoBinderOp, IDSOperator> replacedToSubstitute);
+	Set<IDSOperator> getOperators();
+	
+	IDSOperator getToken();
 	
 	void incCounters();
 	
-	String asStringOfIDs();
+	void replaceMonoBinderOp(Map<IMonoBinderOp, IDSOperator> replacedToSubstitute);
 
 }

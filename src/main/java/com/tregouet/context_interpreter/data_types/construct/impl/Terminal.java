@@ -11,19 +11,6 @@ public class Terminal implements ITerminal {
 	}
 	
 	@Override
-	public String toString() {
-		return symbol;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -38,6 +25,19 @@ public class Terminal implements ITerminal {
 		} else if (!symbol.equals(other.symbol))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((symbol == null) ? 0 : symbol.hashCode());
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return symbol;
 	}
 
 }

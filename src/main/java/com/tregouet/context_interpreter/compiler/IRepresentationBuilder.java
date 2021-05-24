@@ -8,28 +8,28 @@ import com.tregouet.context_interpreter.data_types.representation.IRepresentatio
 
 public interface IRepresentationBuilder extends ITransducer {
 	
-	IRepresentation describe(List<IConstruct> constructs);
+	void calculateRepresentationCost();
 	
-	IRepresentation inferAndDescribe(IConstruct construct);
+	IRepresentation describe(List<IConstruct> constructs);
 	
 	IRepresentation doAbstract(List<IConstruct> constructs);
 	
-	IRepresentation inferAndAbstract(List<IConstruct> constructs);
+	IRepresentation getOutputLanguage();
+	
+	float getRepresentationCost();
+	
+	float howInformative(IConstruct construct);
+	
+	float howPrototypical(int objIndex, Set<Integer> subCtxtIdxes);
+	
+	float howProtoypical(int objIndex1);
 	
 	float howSimilar(Set<Integer> objIndexes);
 	
 	float howSimilarTo(int objIndex1, int objIndex2);
 	
-	float howProtoypical(int objIndex1);
+	IRepresentation inferAndAbstract(List<IConstruct> constructs);
 	
-	float howPrototypical(int objIndex, Set<Integer> subCtxtIdxes);
-	
-	float howInformative(IConstruct construct);
-	
-	void calculateRepresentationCost();
-	
-	float getRepresentationCost();
-	
-	IRepresentation getOutputLanguage();
+	IRepresentation inferAndDescribe(IConstruct construct);
 
 }

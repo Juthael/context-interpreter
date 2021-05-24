@@ -7,12 +7,12 @@ import com.tregouet.context_interpreter.compiler.ITransition;
 
 public interface IStateDeterministicTF extends ITransitionFunc {
 	
-	Set<IDeterministicTF> getDeterministicTFs();
-	
 	Set<Set<ITransition>> buidTransitionTrees(Set<ITransition> transFromStart);
 	
-	void removeTunnelStates();
+	Set<IDeterministicTF> getDeterministicTFs();
 	
 	ITransition reduce(List<ITransition> transitionChain);
+	
+	void removeTunnelStates();
 
 }

@@ -7,8 +7,8 @@ import com.tregouet.context_interpreter.compiler.ITransition;
 
 public interface ITransitionFunc {
 	
-	Set<ITransition> getTransitions();
-	
 	Set<IState> getStates();
+	
+	Set<ITransition> getTransitions();
 
 }

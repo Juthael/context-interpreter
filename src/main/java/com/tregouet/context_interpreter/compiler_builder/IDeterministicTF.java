@@ -7,18 +7,18 @@ import com.tregouet.context_interpreter.compiler.ITransition;
 
 public interface IDeterministicTF extends ITransitionFunc {
 	
-	void optimize();
-	
-	void setCosts();
-	
-	void buildMultiTapeOperators();
+	void buildConjunctiveOperators();
 	
 	void buildMultiBinderOperators();
 	
-	void buildConjunctiveOperators();
+	void buildMultiTapeOperators();
 	
 	Set<List<ITransition>> buildTransitionMaxChains();
 	
 	void incrementCounters(Set<List<ITransition>> maxChains);
+	
+	void optimize();
+	
+	void setCosts();
 
 }

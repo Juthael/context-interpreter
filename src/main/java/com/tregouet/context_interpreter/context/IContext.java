@@ -13,10 +13,10 @@ public interface IContext {
 	
 	TreeSet<IRepresentation> buildRepresentations();
 	
+	float getCtxtOptimalRepresentationCost();
+	
 	TreeSet<IRepresentation> getRepresentations();
 	
 	TreeSet<IRepresentation> getRepresentationsWithStructure(String structure);
-	
-	float getCtxtOptimalRepresentationCost();
 
 }

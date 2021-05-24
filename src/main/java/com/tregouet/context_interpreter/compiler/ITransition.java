@@ -6,18 +6,18 @@ public interface ITransition {
 	
 	boolean accept(IState state, ITapes tapes);
 	
-	IState getReadingState();
+	void editEvaluationLog();
 	
 	IState getNextState();
 	
 	IDSOperator getOutput();
 	
-	void incrementCounters();
+	IState getReadingState();
 	
-	void setCosts();
+	void incrementCounters();
 	
 	void localizeAsStateRule();
 	
-	void editEvaluationLog();
+	void setCosts();
 
 }

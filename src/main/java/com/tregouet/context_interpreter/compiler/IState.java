@@ -14,30 +14,30 @@ public interface IState {
 	public static final int PRE_ACCEPT_STATE = 4;
 	public static final int ACCEPT_STATE = 5;
 	
-	Set<IConstruct> getIntent();
-	
-	Set<IContextObject> getExtent();
-	
-	int getStateID();
-	
 	boolean acceptInput(ITapes tapes);
 	
 	void acceptStateInputLanguage();
 	
-	void proceedTransitions();
-	
-	int getRank();
+	void addRule(ITransition transition);
 	
 	void generateOutputLanguage();
 	
-	void reset();
+	Set<IContextObject> getExtent();
+	
+	Set<IConstruct> getIntent();
+	
+	int getRank();
+	
+	int getStateID();
 	
 	boolean isActive();
 	
-	void addRule(ITransition transition);
+	void mergeTapesWithSameInput();
+	
+	void proceedTransitions();
+	
+	void reset();
 	
 	void setRank(int rank);
-	
-	void mergeTapesWithSameInput();
 
 }

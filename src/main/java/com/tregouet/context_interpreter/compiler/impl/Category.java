@@ -25,22 +25,12 @@ public class Category implements ICategory {
 		this.extent = extent;
 	}
 
-	public void setRank(int maxPathLengthFromMin) {
-		rank = maxPathLengthFromMin;
-
-	}
-
-	public void setType(int type) {
-		this.type = type;
-
+	public Set<IContextObject> getExtent() {
+		return extent;
 	}
 
 	public Set<IConstruct> getIntent() {
 		return intent;
-	}
-
-	public Set<IContextObject> getExtent() {
-		return extent;
 	}
 
 	public int getRank() {
@@ -49,6 +39,14 @@ public class Category implements ICategory {
 
 	public int getType() {
 		return type;
+	}
+
+	public void setRank(int maxPathLengthFromMin) {
+		rank = maxPathLengthFromMin;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 
 }

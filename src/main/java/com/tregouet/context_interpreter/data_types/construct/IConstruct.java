@@ -7,16 +7,16 @@ import com.tregouet.subseq_finder.ISymbolSeq;
 
 public interface IConstruct {
 	
+	Iterator<ISymbol> getIteratorOverSymbols();
+	
 	List<ISymbol> getListOfSymbols();
+	
+	boolean isAbstract();
+	
+	boolean meets(IConstruct constraint);
 	
 	List<String> toListOfStrings();
 	
 	ISymbolSeq toSymbolSeq();
-	
-	Iterator<ISymbol> getIteratorOverSymbols();
-	
-	boolean meets(IConstruct constraint);
-	
-	boolean isAbstract();
 
 }

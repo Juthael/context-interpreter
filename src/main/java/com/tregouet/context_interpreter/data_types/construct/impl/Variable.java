@@ -11,42 +11,8 @@ public class Variable implements IVariable {
 
 	public final static boolean DEFERRED_NAMING = true;
 	
-	private char name = ISymbolSeq.PLACEHOLDER.charAt(0);
-	private int instantiations = 0;
 	private static final List<Character> authorizedCharASCII = new ArrayList<Character>();
 	private static Iterator<Character> charIte;
-	
-	public Variable(boolean lateNaming) {
-		if (!lateNaming)
-			setName();
-	}
-
-	public char getVarChar() {
-		return name;
-	}
-
-	public void incrementInstantiationCount() {
-		instantiations++;
-	}
-
-	public int getInstantiationCount() {
-		return instantiations;
-	}
-	
-	private char getNextChar() {
-		if (!charIte.hasNext())
-			charIte = authorizedCharASCII.iterator();
-		return charIte.next();
-	}
-	
-	public void setName() {
-		if (authorizedCharASCII.isEmpty()) {
-			setAuthorizedCharASCII();
-			charIte = authorizedCharASCII.iterator();
-		}
-		name = getNextChar();	
-	}
-	
 	private static void setAuthorizedCharASCII() {
 		for (char curr = 'a' ; curr <= 'z' ; curr++) {
 			authorizedCharASCII.add(curr);
@@ -55,13 +21,13 @@ public class Variable implements IVariable {
 			authorizedCharASCII.add(curr);
 		}
 	}
+	private char name = ISymbolSeq.PLACEHOLDER.charAt(0);
+	
+	private int instantiations = 0;
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + name;
-		return result;
+	public Variable(boolean lateNaming) {
+		if (!lateNaming)
+			setName();
 	}
 
 	@Override
@@ -77,10 +43,44 @@ public class Variable implements IVariable {
 			return false;
 		return true;
 	}
+
+	public int getInstantiationCount() {
+		return instantiations;
+	}
 	
+	public char getVarChar() {
+		return name;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + name;
+		return result;
+	}
+	
+	public void incrementInstantiationCount() {
+		instantiations++;
+	}
+
+	public void setName() {
+		if (authorizedCharASCII.isEmpty()) {
+			setAuthorizedCharASCII();
+			charIte = authorizedCharASCII.iterator();
+		}
+		name = getNextChar();	
+	}
+
 	@Override
 	public String toString() {
 		return Character.toString(name);
+	}
+	
+	private char getNextChar() {
+		if (!charIte.hasNext())
+			charIte = authorizedCharASCII.iterator();
+		return charIte.next();
 	}
 
 }

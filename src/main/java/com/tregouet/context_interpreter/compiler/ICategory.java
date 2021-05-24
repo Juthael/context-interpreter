@@ -14,16 +14,16 @@ public interface ICategory {
 	public static final int PREACCEPT = 4;
 	public static final int ACCEPT = 5;
 	
-	void setRank(int maxPathLengthFromMin);
-	
-	void setType(int type);
+	Set<IContextObject> getExtent();
 	
 	Set<IConstruct> getIntent();
-	
-	Set<IContextObject> getExtent();
 	
 	int getRank();
 	
 	int getType();
+	
+	void setRank(int maxPathLengthFromMin);
+	
+	void setType(int type);
 
 }

@@ -5,7 +5,5 @@ public interface IEvaluatingLog {
 	void addEvaluation(IEvaluation eval);
 	
 	IEvaluation getLastEvaluation();
-	
-	String toString();
 
 }

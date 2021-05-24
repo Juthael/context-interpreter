@@ -11,18 +11,18 @@ import com.tregouet.context_interpreter.data_types.representation.IRepresentatio
 
 public interface ICompilerBuilder {
 	
-	ITransducer getNDTransducer();
-	
-	Set<ITransducer> getSDTransducers();
-	
-	TreeSet<IRepresentation> getRepresentations();
-	
-	Map<IState, Set<IState>> buildRelOverStates(Map<ICategory, Set<ICategory>> relOverCat);
+	TreeSet<IDeterministicTF> buildDeterministicTFs(Set<IStateDeterministicTF> stateDetTFs);
 	
 	INonDeterministicTF buildNondeterministicTF(Map<IState, Set<IState>> relOverStates);
 	
+	Map<IState, Set<IState>> buildRelOverStates(Map<ICategory, Set<ICategory>> relOverCat);
+	
 	Set<IStateDeterministicTF> buildStateDeterministicTFs(INonDeterministicTF nonDetTF);
 	
-	TreeSet<IDeterministicTF> buildDeterministicTFs(Set<IStateDeterministicTF> stateDetTFs);
+	ITransducer getNDTransducer();
+	
+	TreeSet<IRepresentation> getRepresentations();
+	
+	Set<ITransducer> getSDTransducers();
 
 }

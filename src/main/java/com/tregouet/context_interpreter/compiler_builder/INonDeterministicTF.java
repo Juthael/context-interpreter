@@ -8,12 +8,12 @@ import com.tregouet.context_interpreter.compiler.ITransition;
 
 public interface INonDeterministicTF extends ITransitionFunc {
 	
+	Set<Set<IState>> buildStateTreeSets(Set<IState> objectStates);
+	
 	Set<ITransition> buildTransitions(Map<IState, Set<IState>> relOverStates);
 	
 	Set<IDeterministicTF> getDeterministicTFs();
 	
 	Set<IStateDeterministicTF> getStateDeterministicTFs();
-	
-	Set<Set<IState>> buildStateTreeSets(Set<IState> objectStates);
 
 }

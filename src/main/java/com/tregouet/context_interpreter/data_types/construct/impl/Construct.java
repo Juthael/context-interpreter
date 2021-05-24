@@ -14,6 +14,15 @@ public class Construct implements IConstruct {
 
 	private final List<ISymbol> prog;
 	
+	public Construct(ISymbolSeq symSeq) {
+		prog = new ArrayList<ISymbol>();
+		for (String stringSym : symSeq.getStringSequence()) {
+			if (stringSym.equals(ISymbolSeq.PLACEHOLDER))
+				prog.add(new Variable(Variable.DEFERRED_NAMING));
+			else prog.add(new Terminal(stringSym));
+		}
+	}
+	
 	public Construct(List<ISymbol> prog) {
 		this.prog = prog;
 	}
@@ -25,68 +34,6 @@ public class Construct implements IConstruct {
 				prog.add(new Variable(Variable.DEFERRED_NAMING));
 			else prog.add(new Terminal(symString));
 		}
-	}
-	
-	public Construct(ISymbolSeq symSeq) {
-		prog = new ArrayList<ISymbol>();
-		for (String stringSym : symSeq.getStringSequence()) {
-			if (stringSym.equals(ISymbolSeq.PLACEHOLDER))
-				prog.add(new Variable(Variable.DEFERRED_NAMING));
-			else prog.add(new Terminal(stringSym));
-		}
-	}
-
-	public boolean meets(IConstruct constraint) {
-		if (prog.size() > constraint.getListOfSymbols().size()) {
-			List<ISymbol> constructSymbols = this.getListOfSymbols();
-			List<ISymbol> constraintSymbols = constraint.getListOfSymbols();
-			int constraintIdx = 0;
-			for (int constructIdx = 0 ; constructIdx < constructSymbols.size() && constraintIdx < constraintSymbols.size() ; constructIdx++) {
-				if (constructSymbols.get(constructIdx).equals(constraintSymbols.get(constraintIdx)))
-					constraintIdx++;
-			}
-			if (constraintIdx == constraintSymbols.size())
-				return true;
-		}
-		return false;
-	}
-
-	public boolean isAbstract() {
-		for (ISymbol sym : prog) {
-			if (sym instanceof IVariable)
-				return true;
-		}
-		return false;
-	}
-	
-	public Iterator<ISymbol> getIteratorOverSymbols(){
-		return prog.iterator();
-	}
-	
-	public List<ISymbol> getListOfSymbols(){
-		return prog;
-	}
-	
-	public List<String> toListOfStrings(){
-		List<String> list = new ArrayList<String>();
-		for (ISymbol sym : prog) {
-			if (sym instanceof IVariable)
-				list.add(ISymbolSeq.PLACEHOLDER);
-			else list.add(sym.toString());
-		}
-		return list;
-	}
-	
-	public ISymbolSeq toSymbolSeq() {
-		return new SymbolSeq(toListOfStrings());
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((prog == null) ? 0 : prog.hashCode());
-		return result;
 	}
 
 	@Override
@@ -105,7 +52,56 @@ public class Construct implements IConstruct {
 			return false;
 		return true;
 	}
+
+	public Iterator<ISymbol> getIteratorOverSymbols(){
+		return prog.iterator();
+	}
 	
+	public List<ISymbol> getListOfSymbols(){
+		return prog;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((prog == null) ? 0 : prog.hashCode());
+		return result;
+	}
+	
+	public boolean isAbstract() {
+		for (ISymbol sym : prog) {
+			if (sym instanceof IVariable)
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean meets(IConstruct constraint) {
+		if (prog.size() > constraint.getListOfSymbols().size()) {
+			List<ISymbol> constructSymbols = this.getListOfSymbols();
+			List<ISymbol> constraintSymbols = constraint.getListOfSymbols();
+			int constraintIdx = 0;
+			for (int constructIdx = 0 ; constructIdx < constructSymbols.size() && constraintIdx < constraintSymbols.size() ; constructIdx++) {
+				if (constructSymbols.get(constructIdx).equals(constraintSymbols.get(constraintIdx)))
+					constraintIdx++;
+			}
+			if (constraintIdx == constraintSymbols.size())
+				return true;
+		}
+		return false;
+	}
+
+	public List<String> toListOfStrings(){
+		List<String> list = new ArrayList<String>();
+		for (ISymbol sym : prog) {
+			if (sym instanceof IVariable)
+				list.add(ISymbolSeq.PLACEHOLDER);
+			else list.add(sym.toString());
+		}
+		return list;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sB = new StringBuilder();
@@ -115,6 +111,10 @@ public class Construct implements IConstruct {
 				sB.append(" ");
 		}
 		return sB.toString();
+	}
+	
+	public ISymbolSeq toSymbolSeq() {
+		return new SymbolSeq(toListOfStrings());
 	}
 
 }

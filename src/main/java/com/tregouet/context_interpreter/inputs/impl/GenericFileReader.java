@@ -19,9 +19,6 @@ public abstract class GenericFileReader {
 
 	public static final String SEPARATOR = "/";
 	
-	private GenericFileReader() {
-	}
-
 	/**
 	 * <p>
 	 * Generates a list of 'context object' ({@link IContextObject}) out of a {@link Path} parameter pointing to a 
@@ -74,6 +71,9 @@ public abstract class GenericFileReader {
 		}
 		while (line != null);
 		return objects;
+	}
+
+	private GenericFileReader() {
 	}
 
 }

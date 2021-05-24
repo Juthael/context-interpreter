@@ -21,9 +21,6 @@ public class IntentBldr {
 	private static int[] coords;
 	private static Map<ISymbolSeq, Set<ISymbolSeq>> subsqToMaxSubsq;
 	
-	private IntentBldr(List<IContextObject> extent) {
-	}
-
 	public static Set<IConstruct> getIntent(List<IContextObject> extent) {
 		init();
 		arrayDimensions = new int[extent.size()];
@@ -48,7 +45,7 @@ public class IntentBldr {
 		}
 		return intent;
 	}
-	
+
 	//for unit test use only
 	public static Map<ISymbolSeq, Set<ISymbolSeq>> getSubsqToMaxSubsq(List<IContextObject> extent){
 		init();
@@ -70,22 +67,12 @@ public class IntentBldr {
 		return subsqToMaxSubsq;
 	}
 	
-	private static void setSubsqToMaxSubsq() {
-		coords[0] = -1;
-		while (nextCoord()) {
-			List<ISymbolSeq> tuple = new ArrayList<ISymbolSeq>();
-			for (int i = 0 ; i < coords.length ; i++) {
-				tuple.add(objSymbolSeqs.get(i).get(coords[i]));
-			}
-			Set<ISymbolSeq> tupleMaxSubseqs;
-			SubseqFinder subseqFinder = new SubseqFinder(tuple);
-			tupleMaxSubseqs = subseqFinder.getMaxCommonSubseqs();
-			for (ISymbolSeq tupleElmnt : tuple) {
-				subsqToMaxSubsq.get(tupleElmnt).addAll(tupleMaxSubseqs);
-			}
-		}
-		for (ISymbolSeq seq : subsqToMaxSubsq.keySet())
-			subsqToMaxSubsq.put(seq, removeNonMaxSeqs(subsqToMaxSubsq.get(seq)));
+	private static void init() {
+		objSymbolSeqs = new ArrayList<List<ISymbolSeq>>();
+		intent = new HashSet<IConstruct>();
+		arrayDimensions = null;
+		coords = null;
+		subsqToMaxSubsq = new HashMap<ISymbolSeq, Set<ISymbolSeq>>();
 	}
 	
 	private static boolean nextCoord(){
@@ -123,12 +110,25 @@ public class IntentBldr {
 		return new HashSet<ISymbolSeq>(seqList);
 	}
 	
-	private static void init() {
-		objSymbolSeqs = new ArrayList<List<ISymbolSeq>>();
-		intent = new HashSet<IConstruct>();
-		arrayDimensions = null;
-		coords = null;
-		subsqToMaxSubsq = new HashMap<ISymbolSeq, Set<ISymbolSeq>>();
+	private static void setSubsqToMaxSubsq() {
+		coords[0] = -1;
+		while (nextCoord()) {
+			List<ISymbolSeq> tuple = new ArrayList<ISymbolSeq>();
+			for (int i = 0 ; i < coords.length ; i++) {
+				tuple.add(objSymbolSeqs.get(i).get(coords[i]));
+			}
+			Set<ISymbolSeq> tupleMaxSubseqs;
+			SubseqFinder subseqFinder = new SubseqFinder(tuple);
+			tupleMaxSubseqs = subseqFinder.getMaxCommonSubseqs();
+			for (ISymbolSeq tupleElmnt : tuple) {
+				subsqToMaxSubsq.get(tupleElmnt).addAll(tupleMaxSubseqs);
+			}
+		}
+		for (ISymbolSeq seq : subsqToMaxSubsq.keySet())
+			subsqToMaxSubsq.put(seq, removeNonMaxSeqs(subsqToMaxSubsq.get(seq)));
+	}
+	
+	private IntentBldr(List<IContextObject> extent) {
 	}
 
 }

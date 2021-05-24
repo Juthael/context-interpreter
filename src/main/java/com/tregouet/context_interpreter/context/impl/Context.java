@@ -37,6 +37,11 @@ public class Context implements IContext {
 		return null;
 	}
 
+	public float getCtxtOptimalRepresentationCost() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	public TreeSet<IRepresentation> getRepresentations() {
 		// TODO Auto-generated method stub
 		return null;
@@ -45,11 +50,6 @@ public class Context implements IContext {
 	public TreeSet<IRepresentation> getRepresentationsWithStructure(String structure) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public float getCtxtOptimalRepresentationCost() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 }

@@ -37,7 +37,7 @@ public class CatRelationBldr implements ICatRelationBldr {
 		latticeMin = null;
 	}
 
-	public Map<ICategory, Set<ICategory>> getRelOverCategories() {
+	public ICategory buildAcceptCategory() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -52,7 +52,7 @@ public class CatRelationBldr implements ICatRelationBldr {
 		return null;
 	}
 
-	public ICategory buildAcceptCategory() {
+	public Map<ICategory, Set<ICategory>> getRelOverCategories() {
 		// TODO Auto-generated method stub
 		return null;
 	}

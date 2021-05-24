@@ -9,8 +9,8 @@ public interface IContextObject {
 	
 	List<IConstruct> getConstructs();
 	
-	List<ISymbolSeq> toSymbolSeqs();
-	
 	Iterator<IConstruct> getIteratorOnConstructs();
+	
+	List<ISymbolSeq> toSymbolSeqs();
 
 }

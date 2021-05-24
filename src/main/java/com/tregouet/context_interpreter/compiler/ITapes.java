@@ -8,20 +8,20 @@ public interface ITapes {
 	public static final boolean DESCRIPTION = false;
 	public static final boolean ABSTRACTION = true;
 	
-	IConstruct read();
+	IState getPreviousState();
 	
-	void updateInputTape(IConstruct updatedTape);
+	boolean outputIsAbstract();
 	
 	void printOutput(IDSOperator operator);
+	
+	IConstruct read();
 	
 	void resetOutput();
 	
 	void setCurrentState(IState state);
 	
-	IState getPreviousState();
-	
 	void setOutputType();
 	
-	boolean outputIsAbstract();
+	void updateInputTape(IConstruct updatedTape);
 
 }
