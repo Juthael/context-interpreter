@@ -7,14 +7,18 @@ import com.tregouet.context_interpreter.compiler.ICategory;
 
 public interface ICatRelationBldr {
 	
-	ICategory buildAcceptCategory();
+	ICategory getAcceptCategory();
 	
-	Map<ICategory, Set<ICategory>> buildCategoryLattice();
+	Map<ICategory, Set<ICategory>> getCategoryLatticeSuccRel();
 	
-	ICategory buildPreAcceptCategory();
+	ICategory getCatLatticeMax();
 	
-	Map<ICategory, Set<ICategory>> getRelOverCategories();
+	ICategory getLatticeMin();
 	
-	Map<ICategory, Set<ICategory>> updateRelation(ICategory acceptCat, ICategory preAcceptCat);
+	Set<ICategory> getObjectCategories();
+	
+	ICategory getPreAcceptCategory();
+	
+	Map<ICategory, Set<ICategory>> getSuccRelOverCategories();
 
 }

@@ -13,14 +13,6 @@ public class Variable implements IVariable {
 	
 	private static final List<Character> authorizedCharASCII = new ArrayList<Character>();
 	private static Iterator<Character> charIte;
-	private static void setAuthorizedCharASCII() {
-		for (char curr = 'a' ; curr <= 'z' ; curr++) {
-			authorizedCharASCII.add(curr);
-		}
-		for (char curr = 'α' ; curr <= 'ω' ; curr++) {
-			authorizedCharASCII.add(curr);
-		}
-	}
 	private char name = ISymbolSeq.PLACEHOLDER.charAt(0);
 	
 	private int instantiations = 0;
@@ -66,7 +58,12 @@ public class Variable implements IVariable {
 
 	public void setName() {
 		if (authorizedCharASCII.isEmpty()) {
-			setAuthorizedCharASCII();
+			for (char curr = 'a' ; curr <= 'z' ; curr++) {
+				authorizedCharASCII.add(curr);
+			}
+			for (char curr = 945 ; curr <= 965 ; curr++) {
+				authorizedCharASCII.add(curr);
+			}
 			charIte = authorizedCharASCII.iterator();
 		}
 		name = getNextChar();	

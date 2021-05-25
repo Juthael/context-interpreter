@@ -1,0 +1,12 @@
+com.tregouet.context_interpreter.compiler
+com.tregouet.context_interpreter.compiler.impl
+com.tregouet.context_interpreter.compiler_builder
+com.tregouet.context_interpreter.context
+com.tregouet.context_interpreter.context.impl
+com.tregouet.context_interpreter.context.utils
+com.tregouet.context_interpreter.data_types
+com.tregouet.context_interpreter.data_types.construct
+com.tregouet.context_interpreter.data_types.construct.impl
+com.tregouet.context_interpreter.data_types.representation
+com.tregouet.context_interpreter.data_types.representation.op
+com.tregouet.context_interpreter.inputs.impl

@@ -45,6 +45,10 @@ public class IntentBldr {
 		}
 		return intent;
 	}
+	
+	public static Set<IConstruct> getIntent(Set<IContextObject> extent){
+		return getIntent(new ArrayList<IContextObject>(extent));
+	}
 
 	//for unit test use only
 	public static Map<ISymbolSeq, Set<ISymbolSeq>> getSubsqToMaxSubsq(List<IContextObject> extent){
