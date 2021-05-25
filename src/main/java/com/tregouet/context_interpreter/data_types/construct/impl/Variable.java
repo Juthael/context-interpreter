@@ -1,27 +1,19 @@
 package com.tregouet.context_interpreter.data_types.construct.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import com.tregouet.context_interpreter.data_types.construct.IVariable;
+import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.subseq_finder.ISymbolSeq;
 
-public class Variable implements IVariable {
-
-	public final static boolean DEFERRED_NAMING = true;
+public class Variable extends AVariable {
 	
-	private static final List<Character> authorizedCharASCII = new ArrayList<Character>();
-	private static Iterator<Character> charIte;
-	private char name = ISymbolSeq.PLACEHOLDER.charAt(0);
-	
-	private int instantiations = 0;
+	private String name = ISymbolSeq.PLACEHOLDER;
 
-	public Variable(boolean lateNaming) {
-		if (!lateNaming)
+	private int assignments = 0;
+
+	public Variable(boolean deferredNaming) {
+		if (!deferredNaming)
 			setName();
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -31,53 +23,41 @@ public class Variable implements IVariable {
 		if (getClass() != obj.getClass())
 			return false;
 		Variable other = (Variable) obj;
-		if (name != other.name)
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
 			return false;
 		return true;
 	}
-
-	public int getAssignmentCount() {
-		return instantiations;
-	}
 	
-	public char getVarChar() {
+	public int getAssignmentCount() {
+		return assignments;
+	}
+
+	public String getName() {
 		return name;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + name;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 	
 	public void incrementAssignmentCount() {
-		instantiations++;
+		assignments++;
 	}
 
 	public void setName() {
-		if (authorizedCharASCII.isEmpty()) {
-			for (char curr = 'a' ; curr <= 'z' ; curr++) {
-				authorizedCharASCII.add(curr);
-			}
-			for (char curr = 945 ; curr <= 965 ; curr++) {
-				authorizedCharASCII.add(curr);
-			}
-			charIte = authorizedCharASCII.iterator();
-		}
-		name = getNextChar();	
-	}
-
-	@Override
-	public String toString() {
-		return Character.toString(name);
+		name = provideName();
 	}
 	
-	private char getNextChar() {
-		if (!charIte.hasNext())
-			charIte = authorizedCharASCII.iterator();
-		return charIte.next();
+	@Override
+	public String toString() {
+		return name;
 	}
 
 }

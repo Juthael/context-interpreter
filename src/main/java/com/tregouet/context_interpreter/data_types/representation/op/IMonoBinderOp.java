@@ -1,9 +1,9 @@
 package com.tregouet.context_interpreter.data_types.representation.op;
 
-import com.tregouet.context_interpreter.data_types.construct.IVariable;
+import com.tregouet.context_interpreter.data_types.construct.AVariable;
 
 public interface IMonoBinderOp extends IDSOperator {
 	
-	IVariable getBoundVar();
+	AVariable getBoundVar();
 
 }

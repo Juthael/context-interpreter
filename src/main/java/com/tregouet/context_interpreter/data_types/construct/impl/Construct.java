@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.ISymbol;
-import com.tregouet.context_interpreter.data_types.construct.IVariable;
 import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SymbolSeq;
 
@@ -71,7 +71,7 @@ public class Construct implements IConstruct {
 	
 	public boolean isAbstract() {
 		for (ISymbol sym : prog) {
-			if (sym instanceof IVariable)
+			if (sym instanceof AVariable)
 				return true;
 		}
 		return false;
@@ -95,7 +95,7 @@ public class Construct implements IConstruct {
 	public List<String> toListOfStrings(){
 		List<String> list = new ArrayList<String>();
 		for (ISymbol sym : prog) {
-			if (sym instanceof IVariable)
+			if (sym instanceof AVariable)
 				list.add(ISymbolSeq.PLACEHOLDER);
 			else list.add(sym.toString());
 		}

@@ -9,6 +9,8 @@ public interface ICatRelationBldr {
 	
 	ICategory getAcceptCategory();
 	
+	Set<ICategory> getCategories();
+	
 	Map<ICategory, Set<ICategory>> getCategoryLatticeSuccRel();
 	
 	ICategory getCatLatticeMax();
@@ -18,6 +20,10 @@ public interface ICatRelationBldr {
 	Set<ICategory> getObjectCategories();
 	
 	ICategory getPreAcceptCategory();
+	
+	Map<ICategory, Set<ICategory>> getPrecRelOverCategories();
+	
+	Map<ICategory, Set<ICategory>> getRelOverCategories();
 	
 	Map<ICategory, Set<ICategory>> getSuccRelOverCategories();
 
