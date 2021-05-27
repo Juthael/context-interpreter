@@ -40,6 +40,7 @@ public class CatRelationBldr implements ICatRelationBldr {
 	
 	public CatRelationBldr(List<IContextObject> objects) {
 		this.objects = objects;
+		AVariable.initializeNameProvider();
 		buildCategoryLatticeStrictPartialOrderRelation();
 		instantiateAcceptCategory();
 		instantiatePreAcceptCategory();
@@ -52,6 +53,10 @@ public class CatRelationBldr implements ICatRelationBldr {
 
 	public ICategory getAcceptCategory() {
 		return accept;
+	}
+	
+	public Set<ICategory> getAllLatticeElements(){
+		return latticeElmnts;
 	}
 	
 	public Set<ICategory> getCategories(){
@@ -69,6 +74,10 @@ public class CatRelationBldr implements ICatRelationBldr {
 	public ICategory getCatLatticeMax() {
 		return latticeMax;
 	}
+	
+	public Set<ICategory> getLatticeCategories(){
+		return latticeCat;
+	}
 
 	public ICategory getLatticeMin() {
 		return latticeMin;
@@ -82,12 +91,12 @@ public class CatRelationBldr implements ICatRelationBldr {
 		return preAccept;
 	}
 	
-	public Map<ICategory, Set<ICategory>> getRelOverCategories() {
-		return relOverCategories;
-	}	
-	
 	public Map<ICategory, Set<ICategory>> getPrecRelOverCategories() {
 		return precRelOverCategories;
+	}	
+	
+	public Map<ICategory, Set<ICategory>> getRelOverCategories() {
+		return relOverCategories;
 	}	
 	
 	public Map<ICategory, Set<ICategory>> getSuccRelOverCategories() {
@@ -254,7 +263,7 @@ public class CatRelationBldr implements ICatRelationBldr {
 
 	//recursive
 	private void updateCategoryRanks(ICategory cat, int rank) {
-		if (cat.getRank() < rank || cat.getType() == ICategory.LATT_MIN) {
+		if (cat.rank() < rank || cat.type() == ICategory.LATT_MIN) {
 			cat.setRank(rank);
 			for (ICategory predecessor : precRelOverCategories.get(cat))
 				updateCategoryRanks(predecessor, rank + 1);

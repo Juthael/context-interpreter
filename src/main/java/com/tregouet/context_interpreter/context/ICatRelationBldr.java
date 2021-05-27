@@ -9,11 +9,15 @@ public interface ICatRelationBldr {
 	
 	ICategory getAcceptCategory();
 	
+	Set<ICategory> getAllLatticeElements();
+	
 	Set<ICategory> getCategories();
 	
 	Map<ICategory, Set<ICategory>> getCategoryLatticeSuccRel();
 	
 	ICategory getCatLatticeMax();
+	
+	Set<ICategory> getLatticeCategories();
 	
 	ICategory getLatticeMin();
 	

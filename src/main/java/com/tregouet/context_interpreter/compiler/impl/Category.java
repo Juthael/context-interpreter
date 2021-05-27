@@ -25,7 +25,6 @@ public class Category implements ICategory {
 		this.extent = extent;
 	}
 
-	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -57,14 +56,9 @@ public class Category implements ICategory {
 		return intent;
 	}
 
-	public int getRank() {
-		return rank;
-	}
-
-	public int getType() {
-		return type;
-	}
-
+	/* 
+	 * rank must not be used in hashcode() because of late ranking
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -75,12 +69,20 @@ public class Category implements ICategory {
 		return result;
 	}
 
+	public int rank() {
+		return rank;
+	}
+
 	public void setRank(int maxPathLengthFromMin) {
 		rank = maxPathLengthFromMin;
 	}
 
 	public void setType(int type) {
 		this.type = type;
+	}
+
+	public int type() {
+		return type;
 	}
 
 }

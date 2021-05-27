@@ -18,9 +18,9 @@ public interface ICategory {
 	
 	Set<IConstruct> getIntent();
 	
-	int getRank();
+	int rank();
 	
-	int getType();
+	int type();
 	
 	void setRank(int maxPathLengthFromMin);
 	

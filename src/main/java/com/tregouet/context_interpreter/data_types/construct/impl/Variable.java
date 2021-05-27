@@ -39,12 +39,13 @@ public class Variable extends AVariable {
 		return name;
 	}
 
+	/**
+	 * Name and assignment values can't be used for the generation of a hashcode, because of 
+	 * the possibility of late setting.  
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+		return 1;
 	}
 	
 	public void incrementAssignmentCount() {
