@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
-import com.tregouet.context_interpreter.context.ICatRelationBldr;
+import com.tregouet.context_interpreter.context.IPosetOfCategories;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
@@ -25,11 +25,11 @@ import com.tregouet.context_interpreter.data_types.construct.impl.Construct;
 import com.tregouet.context_interpreter.inputs.impl.GenericFileReader;
 
 @SuppressWarnings("unused")
-public class CatRelationBldrTest {
+public class PosetOfCategoriesTest {
 
 	private static Path shapes3 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes3.txt");
 	List<IContextObject> shapes3Obj;
-	ICatRelationBldr catRel3;
+	IPosetOfCategories catRel3;
 	
 	@SuppressWarnings("unused")
 	@Before
@@ -37,7 +37,7 @@ public class CatRelationBldrTest {
 		shapes3Obj = GenericFileReader.getContextObjects(shapes3);
 		//catRel2 = new CatRelationBldr(shapes2Obj);
 		//printCategories(catRel2);
-		catRel3 = new CatRelationBldr(shapes3Obj);
+		catRel3 = new PosetOfCategories(shapes3Obj);
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class CatRelationBldrTest {
 	@Test
 	public void whenRelationReturnedThenEachLatticeCategoryHasDistinctExtent() {
 		boolean allExtentsAreDistinct = true;
-		List<ICategory> categories = new ArrayList<ICategory>(catRel3.getLatticeCategories());
+		List<ICategory> categories = new ArrayList<ICategory>(catRel3.getLatticeAbstCategories());
 		for (int i = 0 ; i < categories.size() ; i++) {
 			for (int j = i+1 ; j < categories.size() ; j++) {
 				if (categories.get(i).getExtent().equals(categories.get(j).getExtent()))
@@ -102,8 +102,8 @@ public class CatRelationBldrTest {
 		 */
 		boolean eachCatPairHasASupremum = true;
 		boolean eachCatPairHasAnInfimum = true;
-		for (ICategory cat1 : catRel3.getAllLatticeElements()) {
-			for (ICategory cat2 : catRel3.getAllLatticeElements()) {
+		for (ICategory cat1 : catRel3.getLattice()) {
+			for (ICategory cat2 : catRel3.getLattice()) {
 				Set<ICategory> cat1SubCat = catRel3.getRelOverCategories().get(cat1);
 				Set<ICategory> cat2SubCat = catRel3.getRelOverCategories().get(cat2);
 				/*
@@ -116,7 +116,7 @@ public class CatRelationBldrTest {
 					commonLowerBounds.addAll(catRel3.getRelOverCategories().get(cat1));
 					commonLowerBounds.retainAll(catRel3.getRelOverCategories().get(cat2));
 					Set<ICategory> commonUpperBounds = new HashSet<ICategory>();
-					for (ICategory other : catRel3.getAllLatticeElements()) {
+					for (ICategory other : catRel3.getLattice()) {
 						if (catRel3.getRelOverCategories().get(other).contains(cat1)
 								&& catRel3.getRelOverCategories().get(other).contains(cat2))
 							commonUpperBounds.add(other);
@@ -235,7 +235,7 @@ public class CatRelationBldrTest {
 	
 	
 	
-	private void printCategories(ICatRelationBldr catRel) {
+	private void printCategories(IPosetOfCategories catRel) {
 		int maxRank = catRel.getAcceptCategory().rank();
 		System.out.println("**********NEW SET OF CATEGORIES**********" + System.lineSeparator());
 		for (int i = 0 ; i <= maxRank ; i++) {

@@ -10,7 +10,7 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.compiler.impl.Category;
-import com.tregouet.context_interpreter.context.ICatRelationBldr;
+import com.tregouet.context_interpreter.context.IPosetOfCategories;
 import com.tregouet.context_interpreter.context.utils.IntentBldr;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
@@ -24,21 +24,21 @@ import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SubseqFinder;
 import com.tregouet.subseq_finder.impl.SymbolSeq;
 
-public class CatRelationBldr implements ICatRelationBldr {
+public class PosetOfCategories implements IPosetOfCategories {
 
 	private final List<IContextObject> objects;
-	private final Set<ICategory> latticeElmnts = new HashSet<ICategory>();
+	private final Set<ICategory> lattice = new HashSet<ICategory>();
 	private ICategory latticeMax;
-	private final Set<ICategory> latticeCat = new HashSet<ICategory>();
+	private final Set<ICategory> latticeAbstCat = new HashSet<ICategory>();
 	private final Set<ICategory> latticeObj = new HashSet<ICategory>();
 	private ICategory latticeMin;
 	private ICategory accept;
 	private ICategory preAccept;
-	private final Map<ICategory, Set<ICategory>> relOverCategories = new HashMap<ICategory, Set<ICategory>>();
-	private final Map<ICategory, Set<ICategory>> succRelOverCategories = new HashMap<ICategory, Set<ICategory>>();
-	private final Map<ICategory, Set<ICategory>> precRelOverCategories = new HashMap<ICategory, Set<ICategory>>();
+	private final Map<ICategory, Set<ICategory>> relation = new HashMap<ICategory, Set<ICategory>>();
+	private final Map<ICategory, Set<ICategory>> succRelation = new HashMap<ICategory, Set<ICategory>>();
+	private final Map<ICategory, Set<ICategory>> precRelation = new HashMap<ICategory, Set<ICategory>>();
 	
-	public CatRelationBldr(List<IContextObject> objects) {
+	public PosetOfCategories(List<IContextObject> objects) {
 		this.objects = objects;
 		AVariable.initializeNameProvider();
 		buildCategoryLatticeStrictPartialOrderRelation();
@@ -55,17 +55,13 @@ public class CatRelationBldr implements ICatRelationBldr {
 		return accept;
 	}
 	
-	public Set<ICategory> getAllLatticeElements(){
-		return latticeElmnts;
+	public Set<ICategory> getCategories(){
+		return relation.keySet();
 	}
 	
-	public Set<ICategory> getCategories(){
-		return relOverCategories.keySet();
-	}
-
 	public Map<ICategory, Set<ICategory>> getCategoryLatticeSuccRel() {
 		Map<ICategory, Set<ICategory>> latticeSuccRel = 
-				new HashMap<ICategory, Set<ICategory>>(succRelOverCategories);
+				new HashMap<ICategory, Set<ICategory>>(succRelation);
 		latticeSuccRel.remove(accept);
 		latticeSuccRel.remove(preAccept);
 		return latticeSuccRel;
@@ -74,13 +70,22 @@ public class CatRelationBldr implements ICatRelationBldr {
 	public ICategory getCatLatticeMax() {
 		return latticeMax;
 	}
+
+	public Set<ICategory> getLattice(){
+		return lattice;
+	}
 	
-	public Set<ICategory> getLatticeCategories(){
-		return latticeCat;
+	public Set<ICategory> getLatticeAbstCategories(){
+		return latticeAbstCat;
 	}
 
 	public ICategory getLatticeMin() {
 		return latticeMin;
+	}
+	
+	@Override
+	public Set<ICategory> getLowerBounds(ICategory category) {
+		return relation.get(category);
 	}
 	
 	public Set<ICategory> getObjectCategories() {
@@ -89,26 +94,51 @@ public class CatRelationBldr implements ICatRelationBldr {
 	
 	public ICategory getPreAcceptCategory() {
 		return preAccept;
-	}
+	}	
 	
 	public Map<ICategory, Set<ICategory>> getPrecRelOverCategories() {
-		return precRelOverCategories;
+		return precRelation;
 	}	
 	
-	public Map<ICategory, Set<ICategory>> getRelOverCategories() {
-		return relOverCategories;
-	}	
-	
-	public Map<ICategory, Set<ICategory>> getSuccRelOverCategories() {
-		return succRelOverCategories;
+	@Override
+	public Set<ICategory> getPredecessors(ICategory category) {
+		return precRelation.get(category);
 	}
 	
+	public Map<ICategory, Set<ICategory>> getRelOverCategories() {
+		return relation;
+	}
+
+	@Override
+	public Set<List<ICategory>> getSpanningChains() {
+		return continueSpanningChains(getAcceptCategory());
+	}
+
+	@Override
+	public Set<ICategory> getSuccessors(ICategory category) {
+		return succRelation.get(category);
+	}
+
+	public Map<ICategory, Set<ICategory>> getSuccRelOverCategories() {
+		return succRelation;
+	}
+
+	@Override
+	public Set<ICategory> getUpperBounds(ICategory category) {
+		Set<ICategory> upperBounds = new HashSet<ICategory>();
+		for (ICategory cat : relation.keySet()) {
+			if (relation.get(cat).contains(category))
+			upperBounds.add(category);
+		}
+		return upperBounds;
+	}
+
 	private void addAcceptAndPreAcceptCatToRelation() {
-		Set<ICategory> preAcceptSubCat = new HashSet<ICategory>(latticeElmnts);
-		Set<ICategory> acceptSubCat = new HashSet<ICategory>(latticeElmnts);
+		Set<ICategory> preAcceptSubCat = new HashSet<ICategory>(lattice);
+		Set<ICategory> acceptSubCat = new HashSet<ICategory>(lattice);
 		acceptSubCat.add(preAccept);
-		relOverCategories.put(preAccept, preAcceptSubCat);
-		relOverCategories.put(accept, acceptSubCat);
+		relation.put(preAccept, preAcceptSubCat);
+		relation.put(accept, acceptSubCat);
 	}
 
 	private void buildCategoryLatticeStrictPartialOrderRelation() {
@@ -129,18 +159,18 @@ public class CatRelationBldr implements ICatRelationBldr {
 			}
 			else {
 				category.setType(Category.LATT_CAT);
-				latticeCat.add(category);
+				latticeAbstCat.add(category);
 			}
-			latticeElmnts.add(category);
-			relOverCategories.put(category, new HashSet<ICategory>());
+			lattice.add(category);
+			relation.put(category, new HashSet<ICategory>());
 		}
-		List<ICategory> catList = new ArrayList<ICategory>(latticeElmnts);
+		List<ICategory> catList = new ArrayList<ICategory>(lattice);
 		for (int i = 0 ; i < catList.size() ; i++) {
 			for (int j = i+1 ; j < catList.size() ; j++) {
 				if (catList.get(i).getExtent().containsAll(catList.get(j).getExtent()))
-					relOverCategories.get(catList.get(i)).add(catList.get(j));
+					relation.get(catList.get(i)).add(catList.get(j));
 				else if (catList.get(j).getExtent().containsAll(catList.get(i).getExtent()))
-					relOverCategories.get(catList.get(j)).add(catList.get(i));
+					relation.get(catList.get(j)).add(catList.get(i));
 			}
 		}
 	}
@@ -166,7 +196,7 @@ public class CatRelationBldr implements ICatRelationBldr {
 		}
 		return intentsToExtents;
 	}
-
+	
 	private Set<Set<IContextObject>> buildObjectsPowerSet() {
 	    Set<Set<IContextObject>> powerSet = new HashSet<Set<IContextObject>>();
 	    for (int i = 0; i < (1 << objects.size()); i++) {
@@ -179,27 +209,50 @@ public class CatRelationBldr implements ICatRelationBldr {
 	    }
 	    return powerSet;
 	}
-
+	
 	private void buildPredecessorRelation() {
-		for (ICategory cat : succRelOverCategories.keySet()) {
-			precRelOverCategories.put(cat, new HashSet<ICategory>());
+		for (ICategory cat : succRelation.keySet()) {
+			precRelation.put(cat, new HashSet<ICategory>());
 		}
-		for (ICategory cat : succRelOverCategories.keySet()) {
-			for (ICategory succCat : succRelOverCategories.get(cat))
-				precRelOverCategories.get(succCat).add(cat);
+		for (ICategory cat : succRelation.keySet()) {
+			for (ICategory succCat : succRelation.get(cat))
+				precRelation.get(succCat).add(cat);
 		}
 	}
 
 	private void buildSuccessorRelation() {
-		for (ICategory cat : relOverCategories.keySet())
-			succRelOverCategories.put(cat, new HashSet<ICategory>(relOverCategories.get(cat)));
-		for (ICategory cat : succRelOverCategories.keySet()) {
-			for (ICategory otherCat : succRelOverCategories.keySet()) {
-				if (!cat.equals(otherCat) && succRelOverCategories.get(otherCat).contains(cat)) {
-					succRelOverCategories.get(otherCat).removeAll(succRelOverCategories.get(cat));
+		for (ICategory cat : relation.keySet())
+			succRelation.put(cat, new HashSet<ICategory>(relation.get(cat)));
+		for (ICategory cat : succRelation.keySet()) {
+			for (ICategory otherCat : succRelation.keySet()) {
+				if (!cat.equals(otherCat) && succRelation.get(otherCat).contains(cat)) {
+					succRelation.get(otherCat).removeAll(succRelation.get(cat));
 				}
 			}
 		}
+	}
+
+	//recursive
+	private Set<List<ICategory>> continueSpanningChains(ICategory category){
+		Set<List<ICategory>> chains = new HashSet<List<ICategory>>();
+		if (!succRelation.get(category).isEmpty()) {
+			Set<List<ICategory>> subchains = new HashSet<List<ICategory>>();
+			for (ICategory succ : succRelation.get(category)) {
+				//recursion
+				subchains.addAll(continueSpanningChains(succ));
+			}
+			for (List<ICategory> subchain : subchains){
+				List<ICategory> nextChain = new ArrayList<>(subchain);
+				nextChain.add(0, category);
+				chains.add(nextChain);
+			}
+		}
+		else {
+			List<ICategory> chain = new ArrayList<ICategory>();
+			chain.add(category);
+			chains.add(chain);
+		}
+		return chains;
 	}
 
 	private void instantiateAcceptCategory() {
@@ -248,7 +301,7 @@ public class CatRelationBldr implements ICatRelationBldr {
 	
 	private void nameVariables() {
 		AVariable.initializeNameProvider();
-		for (ICategory cat : relOverCategories.keySet()) {
+		for (ICategory cat : relation.keySet()) {
 			for (IConstruct construct : cat.getIntent()) {
 				for (ISymbol symbol : construct.getListOfSymbols())
 					if (symbol instanceof AVariable)
@@ -256,7 +309,7 @@ public class CatRelationBldr implements ICatRelationBldr {
 			}
 		}
 	}
-	
+
 	private void updateCategoryRanks() {
 		updateCategoryRanks(latticeMin, 0);
 	}
@@ -265,9 +318,18 @@ public class CatRelationBldr implements ICatRelationBldr {
 	private void updateCategoryRanks(ICategory cat, int rank) {
 		if (cat.rank() < rank || cat.type() == ICategory.LATT_MIN) {
 			cat.setRank(rank);
-			for (ICategory predecessor : precRelOverCategories.get(cat))
+			for (ICategory predecessor : precRelation.get(cat))
 				updateCategoryRanks(predecessor, rank + 1);
 		}
 	}
 
+	@Override
+	public Map<IConstruct, ICategory> getConstructToCategoryMap() {
+		Map<IConstruct, ICategory> constructToCategory = new HashMap<IConstruct, ICategory>();
+		for (ICategory category : relation.keySet()) {
+			for (IConstruct construct : category.getIntent())
+				constructToCategory.put(construct, category);
+		}
+		return constructToCategory;
+	}
 }

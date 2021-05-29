@@ -20,10 +20,10 @@ public interface ICategory {
 	
 	int rank();
 	
-	int type();
-	
 	void setRank(int maxPathLengthFromMin);
 	
 	void setType(int type);
+	
+	int type();
 
 }
