@@ -51,6 +51,27 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 	}
 
 	@Override
+	public ICategory getCategoryOf(IConstruct construct) {
+		return constructToCat.get(construct);
+	}
+
+	@Override
+	public IPosetOfCategories getFilteredPosetOfCategories() {
+		Map<ICategory, Set<ICategory>> filteredRelation = new HashMap<ICategory, Set<ICategory>>();
+		for (ICategory cat : catPoset.getCategories()) {
+			filteredRelation.put(cat, new HashSet<ICategory>());
+		}
+		for (IConstruct construct : relation.keySet()) {
+			ICategory predecessorCat = constructToCat.get(construct);
+			for (IConstruct succ : succRelation.get(construct)) {
+				ICategory successorCat = constructToCat.get(succ);
+				filteredRelation.get(predecessorCat).add(successorCat);
+			}
+		}
+		return new FilteredPosetOfCategories(catPoset.getObjects(), filteredRelation);
+	}
+
+	@Override
 	public Set<IConstruct> getLowerBounds(IConstruct construct) {
 		return relation.get(construct);
 	}
@@ -79,22 +100,22 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 	public Map<IConstruct, Set<IConstruct>> getRelation() {
 		return relation;
 	}
-
+	
 	@Override
 	public Set<List<IConstruct>> getSpanningChains() {
 		return getChainsFrom(maximum);
 	}
-
+	
 	@Override
 	public Set<IConstruct> getSuccessors(IConstruct construct) {
 		return succRelation.get(construct);
 	}
-	
+
 	@Override
 	public Map<IConstruct, Set<IConstruct>> getSuccRelation() {
 		return succRelation;
 	}
-	
+
 	@Override
 	public Set<IConstruct> getUpperBounds(IConstruct construct) {
 		Set<IConstruct> upperBounds = new HashSet<IConstruct>();
@@ -156,22 +177,6 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 				precRelation.get(successor).add(predecessor);
 			}
 		}
-	}
-
-	@Override
-	public IPosetOfCategories getFilteredPosetOfCategories() {
-		Map<ICategory, Set<ICategory>> filteredRelation = new HashMap<ICategory, Set<ICategory>>();
-		for (ICategory cat : catPoset.getCategories()) {
-			filteredRelation.put(cat, new HashSet<ICategory>());
-		}
-		for (IConstruct construct : relation.keySet()) {
-			ICategory predecessorCat = constructToCat.get(construct);
-			for (IConstruct succ : succRelation.get(construct)) {
-				ICategory successorCat = constructToCat.get(succ);
-				filteredRelation.get(predecessorCat).add(successorCat);
-			}
-		}
-		return new FilteredPosetOfCategories(catPoset.getObjects(), filteredRelation);
 	}
 
 }
