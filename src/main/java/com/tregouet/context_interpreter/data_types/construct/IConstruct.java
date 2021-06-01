@@ -11,6 +11,8 @@ public interface IConstruct {
 	
 	List<ISymbol> getListOfSymbols();
 	
+	int getNbOfTerminals();
+	
 	boolean isAbstract();
 	
 	boolean meets(IConstruct constraint);

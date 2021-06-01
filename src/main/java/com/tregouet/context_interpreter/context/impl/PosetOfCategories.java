@@ -30,15 +30,16 @@ public class PosetOfCategories implements IPosetOfCategories {
 	private final Set<ICategory> lattice = new HashSet<ICategory>();
 	private ICategory latticeMax;
 	private final Set<ICategory> latticeAbstCat = new HashSet<ICategory>();
-	private final Set<ICategory> latticeObj = new HashSet<ICategory>();
+	protected final Set<ICategory> latticeObj = new HashSet<ICategory>();
 	private ICategory latticeMin;
 	private ICategory accept;
 	private ICategory preAccept;
-	private final Map<ICategory, Set<ICategory>> relation = new HashMap<ICategory, Set<ICategory>>();
+	private final Map<ICategory, Set<ICategory>> relation;
 	private final Map<ICategory, Set<ICategory>> succRelation = new HashMap<ICategory, Set<ICategory>>();
-	private final Map<ICategory, Set<ICategory>> precRelation = new HashMap<ICategory, Set<ICategory>>();
+	protected final Map<ICategory, Set<ICategory>> precRelation = new HashMap<ICategory, Set<ICategory>>();
 	
 	public PosetOfCategories(List<IContextObject> objects) {
+		relation = new HashMap<ICategory, Set<ICategory>>();
 		this.objects = objects;
 		AVariable.initializeNameProvider();
 		buildCategoryLatticeStrictPartialOrderRelation();
@@ -49,6 +50,45 @@ public class PosetOfCategories implements IPosetOfCategories {
 		buildPredecessorRelation();
 		updateCategoryRanks();
 		nameVariables();
+	}
+	
+	protected PosetOfCategories(List<IContextObject> objects, Map<ICategory, Set<ICategory>> relation) {
+		this.objects = objects;
+		for (ICategory cat : relation.keySet()) {
+			switch (cat.type()) {
+				case ICategory.LATT_OBJ :
+					latticeObj.add(cat);
+					lattice.add(cat);
+					break;
+				case ICategory.LATT_CAT : 
+					latticeAbstCat.add(cat);
+					lattice.add(cat);
+					break;
+				case ICategory.LATT_MAX :
+					latticeMax = cat;
+					lattice.add(cat);
+					break;
+				case ICategory.PREACCEPT :
+					preAccept = cat;
+					break;
+				case ICategory.ACCEPT :
+					accept = cat;
+					break;
+			}
+		}
+		this.relation = relation;
+		buildSuccessorRelation();
+		buildPredecessorRelation();
+	}
+	
+	public int compare(ICategory cat1, ICategory cat2) {
+		if (relation.get(cat1).contains(cat2))
+			return IPosetOfCategories.SUPER_CATEGORY;
+		else if (relation.get(cat2).contains(cat1))
+			return IPosetOfCategories.SUB_CATEGORY;
+		else if (cat2.equals(cat1))
+			return IPosetOfCategories.EQUALS;
+		return IPosetOfCategories.UNCOMPARABLE;
 	}
 
 	public ICategory getAcceptCategory() {
@@ -79,7 +119,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		return latticeAbstCat;
 	}
 
-	public ICategory getLatticeMin() {
+	public ICategory getCatLatticeMin() {
 		return latticeMin;
 	}
 	
@@ -132,6 +172,8 @@ public class PosetOfCategories implements IPosetOfCategories {
 		}
 		return upperBounds;
 	}
+	
+	
 
 	private void addAcceptAndPreAcceptCatToRelation() {
 		Set<ICategory> preAcceptSubCat = new HashSet<ICategory>(lattice);
@@ -325,11 +367,18 @@ public class PosetOfCategories implements IPosetOfCategories {
 
 	@Override
 	public Map<IConstruct, ICategory> getConstructToCategoryMap() {
+		Set<ICategory> allCategoriesExceptMinimum = new HashSet<>(relation.keySet());
+		allCategoriesExceptMinimum.remove(latticeMin);
 		Map<IConstruct, ICategory> constructToCategory = new HashMap<IConstruct, ICategory>();
-		for (ICategory category : relation.keySet()) {
+		for (ICategory category : allCategoriesExceptMinimum) {
 			for (IConstruct construct : category.getIntent())
 				constructToCategory.put(construct, category);
 		}
 		return constructToCategory;
+	}
+
+	@Override
+	public List<IContextObject> getObjects() {
+		return objects;
 	}
 }

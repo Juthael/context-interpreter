@@ -7,12 +7,14 @@ import java.util.List;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.ISymbol;
+import com.tregouet.context_interpreter.data_types.construct.ITerminal;
 import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SymbolSeq;
 
 public class Construct implements IConstruct {
 
 	private final List<ISymbol> prog;
+	private final int nbOfTerminals;
 	
 	public Construct(ISymbolSeq symSeq) {
 		prog = new ArrayList<ISymbol>();
@@ -21,10 +23,22 @@ public class Construct implements IConstruct {
 				prog.add(new Variable(Variable.DEFERRED_NAMING));
 			else prog.add(new Terminal(stringSym));
 		}
+		int nbOfTerminals = 0;
+		for (ISymbol symbol : prog) {
+			if (symbol instanceof ITerminal)
+				nbOfTerminals++;
+		}
+		this.nbOfTerminals = nbOfTerminals;
 	}
 	
 	public Construct(List<ISymbol> prog) {
 		this.prog = prog;
+		int nbOfTerminals = 0;
+		for (ISymbol symbol : prog) {
+			if (symbol instanceof ITerminal)
+				nbOfTerminals++;
+		}
+		this.nbOfTerminals = nbOfTerminals;
 	}
 	
 	public Construct(String[] progStrings) {
@@ -34,6 +48,12 @@ public class Construct implements IConstruct {
 				prog.add(new Variable(Variable.DEFERRED_NAMING));
 			else prog.add(new Terminal(symString));
 		}
+		int nbOfTerminals = 0;
+		for (ISymbol symbol : prog) {
+			if (symbol instanceof ITerminal)
+				nbOfTerminals++;
+		}
+		this.nbOfTerminals = nbOfTerminals;
 	}
 
 	@Override
@@ -62,6 +82,11 @@ public class Construct implements IConstruct {
 	}
 	
 	@Override
+	public int getNbOfTerminals() {
+		return nbOfTerminals;
+	}
+	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -76,7 +101,7 @@ public class Construct implements IConstruct {
 		}
 		return false;
 	}
-	
+
 	public boolean meets(IConstruct constraint) {
 		if (prog.size() > constraint.getListOfSymbols().size()) {
 			List<ISymbol> constructSymbols = this.getListOfSymbols();
@@ -101,7 +126,7 @@ public class Construct implements IConstruct {
 		}
 		return list;
 	}
-
+	
 	@Override
 	public String toString() {
 		StringBuilder sB = new StringBuilder();
@@ -112,7 +137,7 @@ public class Construct implements IConstruct {
 		}
 		return sB.toString();
 	}
-	
+
 	public ISymbolSeq toSymbolSeq() {
 		return new SymbolSeq(toListOfStrings());
 	}

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
+import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 
 public interface IPosetOfCategories {
 	
@@ -14,7 +15,7 @@ public interface IPosetOfCategories {
 	public static final int EQUALS = 0;
 	public static final int SUPER_CATEGORY = 1;
 	
-	public static int compare(ICategory cat1, ICategory cat2) {
+	public static int compareStatic(ICategory cat1, ICategory cat2) {
 		if (!cat1.getExtent().equals(cat2.getExtent())) {
 			if (cat1.getExtent().containsAll(cat2.getExtent()))
 				return IPosetOfCategories.SUPER_CATEGORY;
@@ -28,6 +29,8 @@ public interface IPosetOfCategories {
 			return SUB_CATEGORY;
 		}
 	}
+	
+	int compare(ICategory cat1, ICategory cat2);
 	
 	ICategory getAcceptCategory();
 	
@@ -43,11 +46,13 @@ public interface IPosetOfCategories {
 	
 	Set<ICategory> getLatticeAbstCategories();
 	
-	ICategory getLatticeMin();
+	ICategory getCatLatticeMin();
 	
 	Set<ICategory> getLowerBounds(ICategory category);
 	
 	Set<ICategory> getObjectCategories();
+	
+	List<IContextObject> getObjects();
 	
 	ICategory getPreAcceptCategory();
 	
