@@ -1,7 +1,6 @@
 package com.tregouet.context_interpreter.context.impl;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -87,10 +86,79 @@ public class PosetOfConstructsTest {
 	
 	@Test
 	public void whenMinimaRequestedThenUnionOfObjIntentsReturned() {
+		//HERE
+		for (IConstruct construct : constRel3.getRelation().keySet()) {
+			if (constRel3.getLowerBounds(construct).isEmpty()) {
+				if (construct.getNbOfTerminals() < construct.getListOfSymbols().size()) {
+					System.out.println("PROBLEMATIC CONSTRUCT : ");
+					System.out.println(construct.toString() + System.lineSeparator());
+					System.out.println("cat hashcode : " + constRel3.getCategoryOf(construct).hashCode());
+					System.out.println("cat type :" + constRel3.getCategoryOf(construct).type());
+					System.out.println("cat rank :" + constRel3.getCategoryOf(construct).rank());
+					System.out.println("cat nb of subCategories : " + 						catRel3.getSuccessors(constRel3.getCategoryOf(construct)).size());
+					System.out.println("cat intent : ");
+					for (IConstruct catConst : constRel3.getCategoryOf(construct).getIntent()) {
+						System.out.println(catConst.toString());
+					}
+					System.out.println("cat extent : ");
+					for (IContextObject obj : constRel3.getCategoryOf(construct).getExtent()) {
+						System.out.println(obj.getID() + " ; ");
+					}
+					System.out.println(System.lineSeparator());
+					int subCatIdx = 1;
+					for (ICategory subCat : catRel3.getSuccessors(constRel3.getCategoryOf(construct))) {
+						System.out.println("SUBCAT N° " + subCatIdx + " : ");
+						System.out.println("subcat hashcode : " + subCat.hashCode());
+						for (IConstruct subCatConst : subCat.getIntent()) {
+							System.out.println(subCatConst.toString());
+						}
+						System.out.println("cat extent : ");
+						for (IContextObject subCatObj : subCat.getExtent()) {
+							System.out.println(subCatObj.getID() + " ; ");
+						}
+						for (IConstruct subCatConst : subCat.getIntent()) {
+							boolean subCatConstIsAnInstance = IPosetOfConstructs.generates(construct, subCatConst);
+							System.out.println(subCatConst.toString() + " -> " + subCatConstIsAnInstance);
+							if (subCatConstIsAnInstance) {
+								if(constRel3.compare(construct, subCatConst) == IPosetOfConstructs.ABSTRACTION_OF)
+									System.out.println("Recognized as such");
+								else System.out.println("Not recognized");
+							}
+							
+						}
+						subCatIdx++;
+						System.out.println(System.lineSeparator());
+					}
+				}
+				System.out.println("******************" + System.lineSeparator());
+			}
+				
+		}
+		//HERE
+		//HERE
+		for (IConstruct construct : constRel3.getRelation().keySet()) {
+			System.out.println("NEW CONSTRUCT : " + System.lineSeparator());
+			System.out.println(construct.toString());
+			System.out.println("successors : ");
+			for (IConstruct succ : constRel3.getSuccessors(construct))
+				System.out.println(succ.toString());
+			System.out.println(System.lineSeparator());
+		}
 		Set<IConstruct> minima = constRel3.getMinima();
+		//HERE
+		System.out.println("MINIMA");
+		for (IConstruct min : minima)
+			System.out.println(min.toString());
+		System.out.println(System.lineSeparator());
+		//
 		Set<IConstruct> unionOfObjIntents = new HashSet<IConstruct>();
 		for (IContextObject obj : shapes3Obj)
 			unionOfObjIntents.addAll(obj.getConstructs());
+		//HERE
+		System.out.println("OBJ INTENTS : ");
+		for (IConstruct constr : unionOfObjIntents)
+			System.out.println(constr.toString());
+		//
 		assertTrue(minima.equals(unionOfObjIntents));
 	}
 	
@@ -123,12 +191,20 @@ public class PosetOfConstructsTest {
 	
 	@Test
 	public void whenSuccessorRequestedThenReturnedIsAnInstanceOfParam() {
-		
+		boolean succAreInstances = true;
+		for (IConstruct construct : constRel3.getRelation().keySet()) {
+			for (IConstruct successor : constRel3.getSuccessors(construct)) {
+				if (!IPosetOfConstructs.generates(construct, successor))
+					succAreInstances = false;
+			}
+		}
+		assertTrue(succAreInstances);
 	}
 	
 	@Test
 	public void whenFilteredPosetRequestedThenReturned() {
-		
+		IPosetOfCategories filteredPoset = constRel3.getFilteredPosetOfCategories();
+		assertTrue(true);
 	}
 	
 }

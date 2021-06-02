@@ -10,9 +10,7 @@ import java.util.Set;
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.context.IPosetOfCategories;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
-import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
-import com.tregouet.context_interpreter.data_types.construct.ISymbol;
 
 public class PosetOfConstructs implements IPosetOfConstructs {
 

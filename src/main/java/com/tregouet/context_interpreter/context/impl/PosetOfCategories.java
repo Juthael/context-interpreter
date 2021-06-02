@@ -82,6 +82,10 @@ public class PosetOfCategories implements IPosetOfCategories {
 	}
 	
 	public int compare(ICategory cat1, ICategory cat2) {
+		//HERE
+		int hashCodeCat1 = cat1.hashCode();
+		int hashCodeCat2 = cat2.hashCode();
+		//
 		if (relation.get(cat1).contains(cat2))
 			return IPosetOfCategories.SUPER_CATEGORY;
 		else if (relation.get(cat2).contains(cat1))
@@ -111,16 +115,28 @@ public class PosetOfCategories implements IPosetOfCategories {
 		return latticeMax;
 	}
 
+	public ICategory getCatLatticeMin() {
+		return latticeMin;
+	}
+	
+	@Override
+	public Map<IConstruct, ICategory> getConstructToCategoryMap() {
+		Set<ICategory> allCategoriesExceptMinimum = new HashSet<ICategory>(relation.keySet());
+		allCategoriesExceptMinimum.remove(latticeMin);
+		Map<IConstruct, ICategory> constructToCategory = new HashMap<IConstruct, ICategory>();
+		for (ICategory category : allCategoriesExceptMinimum) {
+			for (IConstruct construct : category.getIntent())
+				constructToCategory.put(construct, category);
+		}
+		return constructToCategory;
+	}
+
 	public Set<ICategory> getLattice(){
 		return lattice;
 	}
 	
 	public Set<ICategory> getLatticeAbstCategories(){
 		return latticeAbstCat;
-	}
-
-	public ICategory getCatLatticeMin() {
-		return latticeMin;
 	}
 	
 	@Override
@@ -130,21 +146,26 @@ public class PosetOfCategories implements IPosetOfCategories {
 	
 	public Set<ICategory> getObjectCategories() {
 		return latticeObj;
-	}
+	}	
+	
+	@Override
+	public List<IContextObject> getObjects() {
+		return objects;
+	}	
 	
 	public ICategory getPreAcceptCategory() {
 		return preAccept;
-	}	
+	}
 	
 	public Map<ICategory, Set<ICategory>> getPrecRelOverCategories() {
 		return precRelation;
-	}	
-	
+	}
+
 	@Override
 	public Set<ICategory> getPredecessors(ICategory category) {
 		return precRelation.get(category);
 	}
-	
+
 	public Map<ICategory, Set<ICategory>> getRelOverCategories() {
 		return relation;
 	}
@@ -158,6 +179,8 @@ public class PosetOfCategories implements IPosetOfCategories {
 	public Set<ICategory> getSuccessors(ICategory category) {
 		return succRelation.get(category);
 	}
+	
+	
 
 	public Map<ICategory, Set<ICategory>> getSuccRelOverCategories() {
 		return succRelation;
@@ -172,8 +195,6 @@ public class PosetOfCategories implements IPosetOfCategories {
 		}
 		return upperBounds;
 	}
-	
-	
 
 	private void addAcceptAndPreAcceptCatToRelation() {
 		Set<ICategory> preAcceptSubCat = new HashSet<ICategory>(lattice);
@@ -182,7 +203,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		relation.put(preAccept, preAcceptSubCat);
 		relation.put(accept, acceptSubCat);
 	}
-
+	
 	private void buildCategoryLatticeStrictPartialOrderRelation() {
 		Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents = buildIntentToExtentRel();
 		for (Entry<Set<IConstruct>, Set<IContextObject>> entry : intentsToExtents.entrySet()) {
@@ -207,7 +228,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 			relation.put(category, new HashSet<ICategory>());
 		}
 		List<ICategory> catList = new ArrayList<ICategory>(lattice);
-		for (int i = 0 ; i < catList.size() ; i++) {
+		for (int i = 0 ; i < catList.size() - 1 ; i++) {
 			for (int j = i+1 ; j < catList.size() ; j++) {
 				if (catList.get(i).getExtent().containsAll(catList.get(j).getExtent()))
 					relation.get(catList.get(i)).add(catList.get(j));
@@ -216,7 +237,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 			}
 		}
 	}
-
+	
 	private Map<Set<IConstruct>, Set<IContextObject>> buildIntentToExtentRel() {
 		Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents = 
 				new HashMap<Set<IConstruct>, Set<IContextObject>>();
@@ -238,7 +259,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		}
 		return intentsToExtents;
 	}
-	
+
 	private Set<Set<IContextObject>> buildObjectsPowerSet() {
 	    Set<Set<IContextObject>> powerSet = new HashSet<Set<IContextObject>>();
 	    for (int i = 0; i < (1 << objects.size()); i++) {
@@ -251,7 +272,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 	    }
 	    return powerSet;
 	}
-	
+
 	private void buildPredecessorRelation() {
 		for (ICategory cat : succRelation.keySet()) {
 			precRelation.put(cat, new HashSet<ICategory>());
@@ -296,7 +317,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		}
 		return chains;
 	}
-
+	
 	private void instantiateAcceptCategory() {
 		ISymbol variable = new Variable(AVariable.DEFERRED_NAMING);
 		List<ISymbol> acceptProg = new ArrayList<ISymbol>();
@@ -340,7 +361,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		preAccept = new Category(preAccIntent, new HashSet<IContextObject>(objects));
 		preAccept.setType(ICategory.PREACCEPT);
 	}
-	
+
 	private void nameVariables() {
 		AVariable.initializeNameProvider();
 		for (ICategory cat : relation.keySet()) {
@@ -363,22 +384,5 @@ public class PosetOfCategories implements IPosetOfCategories {
 			for (ICategory predecessor : precRelation.get(cat))
 				updateCategoryRanks(predecessor, rank + 1);
 		}
-	}
-
-	@Override
-	public Map<IConstruct, ICategory> getConstructToCategoryMap() {
-		Set<ICategory> allCategoriesExceptMinimum = new HashSet<>(relation.keySet());
-		allCategoriesExceptMinimum.remove(latticeMin);
-		Map<IConstruct, ICategory> constructToCategory = new HashMap<IConstruct, ICategory>();
-		for (ICategory category : allCategoriesExceptMinimum) {
-			for (IConstruct construct : category.getIntent())
-				constructToCategory.put(construct, category);
-		}
-		return constructToCategory;
-	}
-
-	@Override
-	public List<IContextObject> getObjects() {
-		return objects;
 	}
 }

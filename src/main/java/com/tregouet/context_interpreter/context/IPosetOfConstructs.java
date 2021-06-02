@@ -22,7 +22,7 @@ public interface IPosetOfConstructs {
 		if (c1NbOfTerminals <= c2NbOfTerminals) {
 			List<ISymbol> c1List = construct1.getListOfSymbols();
 			List<ISymbol> c2List = construct2.getListOfSymbols();
-			int c1Idx = 0;
+			int c1Idx = 0 + ((c1List.get(0) instanceof AVariable) ? 1 : 0);
 			int c2Idx;
 			for (c2Idx = 0 ; c1Idx < c1List.size() && c2Idx < c2List.size() ; c2Idx++) {
 				if (c2List.get(c2Idx).equals(c1List.get(c1Idx))) {
