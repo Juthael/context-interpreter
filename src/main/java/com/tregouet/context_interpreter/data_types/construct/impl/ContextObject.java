@@ -7,17 +7,19 @@ import java.util.List;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.subseq_finder.ISymbolSeq;
+import com.tregouet.subseq_finder.impl.SymbolSeq;
 
 public class ContextObject implements IContextObject {
 
 	private static int lastID = 0;
-	private final List<IConstruct> constructs;
+	private final List<IConstruct> constructs = new ArrayList<IConstruct>();
 	private final String iD;
 	
-	public ContextObject(List<IConstruct> constructs) {
-		this.constructs = constructs;
+	public ContextObject(List<List<String>> constructsAsLists) {
 		iD = "obj" + Integer.toString(lastID);
 		lastID++;
+		for (List<String> constructAsList : constructsAsLists)
+			constructs.add(new Construct(constructAsList));
 	}
 
 	public List<IConstruct> getConstructs() {
@@ -43,7 +45,7 @@ public class ContextObject implements IContextObject {
 	public List<ISymbolSeq> toSymbolSeqs(){
 		List<ISymbolSeq> symbolSeqs = new ArrayList<ISymbolSeq>();
 		for (IConstruct construct : constructs)
-			symbolSeqs.add(construct.toSymbolSeq());
+			symbolSeqs.add(new SymbolSeq(construct.toListOfStringsWithPlaceholders()));
 		return symbolSeqs;
 	}
 

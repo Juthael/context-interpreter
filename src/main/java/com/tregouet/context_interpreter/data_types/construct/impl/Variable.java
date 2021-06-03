@@ -14,6 +14,35 @@ public class Variable extends AVariable {
 			setName();
 	}
 	
+	public int getAssignmentCount() {
+		return assignments;
+	}
+
+	public String getName() {
+		return name;
+	}
+	
+	public void incrementAssignmentCount() {
+		assignments++;
+	}
+
+	public void setName() {
+		name = provideName();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -29,36 +58,6 @@ public class Variable extends AVariable {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
-	}
-	
-	public int getAssignmentCount() {
-		return assignments;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Name and assignment values can't be used for the generation of a hashcode, because of 
-	 * the possibility of late setting.  
-	 */
-	@Override
-	public int hashCode() {
-		return 1;
-	}
-	
-	public void incrementAssignmentCount() {
-		assignments++;
-	}
-
-	public void setName() {
-		name = provideName();
-	}
-	
-	@Override
-	public String toString() {
-		return name;
 	}
 
 }

@@ -21,7 +21,7 @@ import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.data_types.construct.ISymbol;
-import com.tregouet.context_interpreter.data_types.construct.impl.Construct;
+import com.tregouet.context_interpreter.data_types.construct.impl.AbstractConstruct;
 import com.tregouet.context_interpreter.inputs.impl.GenericFileReader;
 
 @SuppressWarnings("unused")

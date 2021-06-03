@@ -17,6 +17,7 @@ import org.junit.Test;
 import com.tregouet.context_interpreter.context.utils.IntentBldr;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
+import com.tregouet.context_interpreter.data_types.construct.impl.AbstractConstruct;
 import com.tregouet.context_interpreter.data_types.construct.impl.Construct;
 import com.tregouet.context_interpreter.inputs.impl.GenericFileReader;
 import com.tregouet.subseq_finder.ISymbolSeq;
@@ -68,10 +69,10 @@ public class IntentBldrTest {
 		Set<IConstruct> betaGammaIntent = IntentBldr.getIntent(betaGamma);
 		Set<IConstruct> betaGammaExpected = setBetaGammaExpected();
 		boolean betaGammaIntentAsExpected = betaGammaIntent.equals(betaGammaExpected);
-		/*
+		
 		for (IConstruct construct : alphaBetaGammaIntent)
 			System.out.println(construct.toString());
-		*/
+		
 		assertTrue(alphaBetaGammaIntentAsExpected 
 				&& alphaBetaIntentAsExpected
 				&& alphaGammaIntentAsExpected
@@ -217,7 +218,9 @@ public class IntentBldrTest {
 		maxSubsqsString.add("figure fond _");
 		maxSubsqsString.add("figure fond _ couleur _");
 		for (String maxSubsq : maxSubsqsString)
-			expected.add(new Construct(maxSubsq.split(" ")));
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
 		return expected;
 	}
 	
@@ -232,7 +235,9 @@ public class IntentBldrTest {
 		maxSubsqsString.add("figure fond _ couleur _");
 		maxSubsqsString.add("figure fond _");
 		for (String maxSubsq : maxSubsqsString)
-			expected.add(new Construct(maxSubsq.split(" ")));
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
 		return expected;
 	}
 	
@@ -246,7 +251,9 @@ public class IntentBldrTest {
 		maxSubsqsString.add("figure _ couleur bleu");
 		maxSubsqsString.add("figure fond _ couleur _");
 		for (String maxSubsq : maxSubsqsString)
-			expected.add(new Construct(maxSubsq.split(" ")));
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
 		return expected;
 	}
 	
@@ -259,7 +266,9 @@ public class IntentBldrTest {
 		maxSubsqsString.add("figure fond rayures orientation _");
 		maxSubsqsString.add("figure fond rayures couleur _");
 		for (String maxSubsq : maxSubsqsString)
-			expected.add(new Construct(maxSubsq.split(" ")));
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
 		return expected;
 	}
 	

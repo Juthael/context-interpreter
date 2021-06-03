@@ -3,8 +3,6 @@ package com.tregouet.context_interpreter.data_types.construct;
 import java.util.Iterator;
 import java.util.List;
 
-import com.tregouet.subseq_finder.ISymbolSeq;
-
 public interface IConstruct {
 	
 	Iterator<ISymbol> getIteratorOverSymbols();
@@ -17,8 +15,8 @@ public interface IConstruct {
 	
 	boolean meets(IConstruct constraint);
 	
-	List<String> toListOfStrings();
+	List<String> toListOfStringsWithPlaceholders();
 	
-	ISymbolSeq toSymbolSeq();
+	void singularize();
 
 }

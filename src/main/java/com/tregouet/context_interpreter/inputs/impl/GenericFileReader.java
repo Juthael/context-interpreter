@@ -5,11 +5,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
-import com.tregouet.context_interpreter.data_types.construct.impl.Construct;
 import com.tregouet.context_interpreter.data_types.construct.impl.ContextObject;
 
 /**
@@ -50,7 +49,7 @@ public abstract class GenericFileReader {
 					+ System.lineSeparator() + e.getMessage());
 		}
 		String line;
-		List<IConstruct> currObjConstructs = new ArrayList<IConstruct>();
+		List<List<String>> currObjConstructsAsLists = new ArrayList<List<String>>();
 		do {
 			try {
 				line = reader.readLine();
@@ -60,12 +59,12 @@ public abstract class GenericFileReader {
 						+ System.lineSeparator() + e.getMessage());
 			}
 			if (line != null && !line.equals(SEPARATOR)) {
-				currObjConstructs.add(new Construct(line.split(SEPARATOR)));
+				currObjConstructsAsLists.add(Arrays.asList(line.split(SEPARATOR)));
 			}
 			else {
-				if (!currObjConstructs.isEmpty()) {
-					objects.add(new ContextObject(currObjConstructs));
-					currObjConstructs = new ArrayList<IConstruct>();
+				if (!currObjConstructsAsLists.isEmpty()) {
+					objects.add(new ContextObject(currObjConstructsAsLists));
+					currObjConstructsAsLists = new ArrayList<List<String>>();
 				}
 			}
 		}

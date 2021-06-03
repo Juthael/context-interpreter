@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
+import com.tregouet.context_interpreter.data_types.construct.impl.AbstractConstruct;
 import com.tregouet.context_interpreter.data_types.construct.impl.Construct;
 import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SubseqFinder;
@@ -40,7 +41,9 @@ public class IntentBldr {
 		setSubsqToMaxSubsq();
 		for (Set<ISymbolSeq> maxSubseqs : subsqToMaxSubsq.values()) {
 			for (ISymbolSeq maxSubseq : maxSubseqs) {
-				intent.add(new Construct(maxSubseq));
+				if (maxSubseq.isAbstract())
+					intent.add(new AbstractConstruct(maxSubseq.getStringArray()));
+				else intent.add(new Construct(maxSubseq.getStringArray()));
 			}
 		}
 		return intent;

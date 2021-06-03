@@ -16,7 +16,7 @@ import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.data_types.construct.ISymbol;
-import com.tregouet.context_interpreter.data_types.construct.impl.Construct;
+import com.tregouet.context_interpreter.data_types.construct.impl.AbstractConstruct;
 import com.tregouet.context_interpreter.data_types.construct.impl.Terminal;
 import com.tregouet.context_interpreter.data_types.construct.impl.Variable;
 import com.tregouet.subseq_finder.ISubseqFinder;
@@ -39,9 +39,9 @@ public class PosetOfCategories implements IPosetOfCategories {
 	protected final Map<ICategory, Set<ICategory>> precRelation = new HashMap<ICategory, Set<ICategory>>();
 	
 	public PosetOfCategories(List<IContextObject> objects) {
+		AVariable.initializeNameProvider();
 		relation = new HashMap<ICategory, Set<ICategory>>();
 		this.objects = objects;
-		AVariable.initializeNameProvider();
 		buildCategoryLatticeStrictPartialOrderRelation();
 		instantiateAcceptCategory();
 		instantiatePreAcceptCategory();
@@ -49,7 +49,6 @@ public class PosetOfCategories implements IPosetOfCategories {
 		buildSuccessorRelation();
 		buildPredecessorRelation();
 		updateCategoryRanks();
-		nameVariables();
 	}
 	
 	protected PosetOfCategories(List<IContextObject> objects, Map<ICategory, Set<ICategory>> relation) {
@@ -82,10 +81,6 @@ public class PosetOfCategories implements IPosetOfCategories {
 	}
 	
 	public int compare(ICategory cat1, ICategory cat2) {
-		//HERE
-		int hashCodeCat1 = cat1.hashCode();
-		int hashCodeCat2 = cat2.hashCode();
-		//
 		if (relation.get(cat1).contains(cat2))
 			return IPosetOfCategories.SUPER_CATEGORY;
 		else if (relation.get(cat2).contains(cat1))
@@ -125,8 +120,9 @@ public class PosetOfCategories implements IPosetOfCategories {
 		allCategoriesExceptMinimum.remove(latticeMin);
 		Map<IConstruct, ICategory> constructToCategory = new HashMap<IConstruct, ICategory>();
 		for (ICategory category : allCategoriesExceptMinimum) {
-			for (IConstruct construct : category.getIntent())
+			for (IConstruct construct : category.getIntent()) {
 				constructToCategory.put(construct, category);
+			}
 		}
 		return constructToCategory;
 	}
@@ -257,6 +253,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 				intentsToExtents.get(intent).addAll(subset);
 			else intentsToExtents.put(intent, subset);
 		}
+		intentsToExtents = singularizeConstructs(intentsToExtents);
 		return intentsToExtents;
 	}
 
@@ -319,10 +316,10 @@ public class PosetOfCategories implements IPosetOfCategories {
 	}
 	
 	private void instantiateAcceptCategory() {
-		ISymbol variable = new Variable(AVariable.DEFERRED_NAMING);
+		ISymbol variable = new Variable(!AVariable.DEFERRED_NAMING);
 		List<ISymbol> acceptProg = new ArrayList<ISymbol>();
 		acceptProg.add(variable);
-		IConstruct acceptConstruct = new Construct(acceptProg);
+		IConstruct acceptConstruct = new AbstractConstruct(acceptProg);
 		Set<IConstruct> acceptIntent =  new HashSet<IConstruct>();
 		acceptIntent.add(acceptConstruct);
 		accept = new Category(acceptIntent, new HashSet<IContextObject>(objects));
@@ -334,7 +331,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		Set<IConstruct> lattMaxIntent = latticeMax.getIntent();
 		List<ISymbolSeq> lattMaxSymbolSeq = new ArrayList<ISymbolSeq>();
 		for (IConstruct construct : lattMaxIntent) {
-			lattMaxSymbolSeq.add(new SymbolSeq(construct.toListOfStrings()));
+			lattMaxSymbolSeq.add(new SymbolSeq(construct.toListOfStringsWithPlaceholders()));
 		}
 		ISubseqFinder subseqFinder = new SubseqFinder(lattMaxSymbolSeq);
 		Set<ISymbolSeq> maxCommonSubsqs = subseqFinder.getMaxCommonSubseqs();
@@ -356,21 +353,41 @@ public class PosetOfCategories implements IPosetOfCategories {
 					lastSymStringWasPlaceholder = false;
 				}
 			}
-			preAccIntent.add(new Construct(preAccSymList));
+			preAccIntent.add(new AbstractConstruct(preAccSymList));
 		}
+		for (IConstruct construct : preAccIntent)
+			construct.singularize();
 		preAccept = new Category(preAccIntent, new HashSet<IContextObject>(objects));
 		preAccept.setType(ICategory.PREACCEPT);
 	}
 
-	private void nameVariables() {
-		AVariable.initializeNameProvider();
-		for (ICategory cat : relation.keySet()) {
-			for (IConstruct construct : cat.getIntent()) {
-				for (ISymbol symbol : construct.getListOfSymbols())
-					if (symbol instanceof AVariable)
-						((AVariable) symbol).setName();
-			}
+	private Map<Set<IConstruct>, Set<IContextObject>> singularizeConstructs(
+			Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents) {
+		Map<Set<IConstruct>, Set<IContextObject>> mapWithSingularizedIntents 
+			= new HashMap<Set<IConstruct>, Set<IContextObject>>();
+		/*
+		 * must use transitory collections not based on hash tables, since variable naming
+		 * will modify hashcodes  
+		 */
+		List<Set<IConstruct>> listOfIntents = new ArrayList<Set<IConstruct>>();
+		List<Set<IConstruct>> listOfSingularizedIntents = new ArrayList<Set<IConstruct>>();
+		List<Set<IContextObject>> listOfExtents = new ArrayList<Set<IContextObject>>();
+		for (Entry<Set<IConstruct>, Set<IContextObject>> entry : intentsToExtents.entrySet()) {
+			listOfIntents.add(entry.getKey());
+			listOfExtents.add(entry.getValue());
 		}
+		for (Set<IConstruct> intent : listOfIntents) {
+			Set<IConstruct> singularizedIntent = new HashSet<IConstruct>();
+			for (IConstruct construct : intent) {
+				construct.singularize();
+				singularizedIntent.add(construct);
+			}
+			listOfSingularizedIntents.add(singularizedIntent);
+		}
+		for (int i = 0 ; i < listOfSingularizedIntents.size() ; i++) {
+			mapWithSingularizedIntents.put(listOfSingularizedIntents.get(i), listOfExtents.get(i));
+		}
+		return mapWithSingularizedIntents;
 	}
 
 	private void updateCategoryRanks() {

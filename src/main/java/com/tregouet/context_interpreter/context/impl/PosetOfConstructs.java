@@ -159,7 +159,9 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 					relation.get(c2).add(c1);
 			}
 		}
-		succRelation.putAll(relation);
+		for (IConstruct construct : relation.keySet()) {
+			succRelation.put(construct, new HashSet<IConstruct>(relation.get(construct)));
+		}
 		for (int k = 0 ; k < constructs.size() ; k++) {
 			for (int l = 0 ; l < constructs.size() ; l++) {
 				if (k != l && succRelation.get(constructs.get(l)).contains(constructs.get(k))) {
@@ -175,6 +177,12 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 				precRelation.get(successor).add(predecessor);
 			}
 		}
+	}
+	
+	//HERE
+	
+	IPosetOfCategories getCP() {
+		return catPoset;
 	}
 
 }
