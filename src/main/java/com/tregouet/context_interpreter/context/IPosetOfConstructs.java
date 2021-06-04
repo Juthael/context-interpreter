@@ -46,7 +46,7 @@ public interface IPosetOfConstructs {
 	
 	ICategory getCategoryOf(IConstruct construct);
 	
-	IPosetOfCategories getFilteredPosetOfCategories();
+	Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories();
 	
 	Set<IConstruct> getLowerBounds(IConstruct construct);
 	

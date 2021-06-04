@@ -34,19 +34,21 @@ public interface IPosetOfCategories {
 	
 	ICategory getAcceptCategory();
 	
+	Set<ICategory> getAllCategoriesExceptLatticeMinimum();
+	
 	Set<ICategory> getCategories();
 	
 	Map<ICategory, Set<ICategory>> getCategoryLatticeSuccRel();
 	
 	ICategory getCatLatticeMax();
 	
+	ICategory getCatLatticeMin();
+	
 	Map<IConstruct, ICategory> getConstructToCategoryMap();
 	
 	Set<ICategory> getLattice();
 	
 	Set<ICategory> getLatticeAbstCategories();
-	
-	ICategory getCatLatticeMin();
 	
 	Set<ICategory> getLowerBounds(ICategory category);
 	
@@ -67,6 +69,8 @@ public interface IPosetOfCategories {
 	Set<ICategory> getSuccessors(ICategory category);
 	
 	Map<ICategory, Set<ICategory>> getSuccRelOverCategories();
+	
+	Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories();
 	
 	Set<ICategory> getUpperBounds(ICategory category);
 

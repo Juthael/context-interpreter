@@ -54,19 +54,19 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 	}
 
 	@Override
-	public IPosetOfCategories getFilteredPosetOfCategories() {
-		Map<ICategory, Set<ICategory>> filteredRelation = new HashMap<ICategory, Set<ICategory>>();
-		for (ICategory cat : catPoset.getCategories()) {
-			filteredRelation.put(cat, new HashSet<ICategory>());
+	public Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories() {
+		Map<ICategory, Set<ICategory>> transitionRelation = new HashMap<ICategory, Set<ICategory>>();
+		for (ICategory cat : catPoset.getAllCategoriesExceptLatticeMinimum()) {
+			transitionRelation.put(cat, new HashSet<ICategory>());
 		}
 		for (IConstruct construct : relation.keySet()) {
 			ICategory predecessorCat = constructToCat.get(construct);
 			for (IConstruct succ : succRelation.get(construct)) {
 				ICategory successorCat = constructToCat.get(succ);
-				filteredRelation.get(predecessorCat).add(successorCat);
+				transitionRelation.get(predecessorCat).add(successorCat);
 			}
 		}
-		return new FilteredPosetOfCategories(catPoset.getObjects(), filteredRelation);
+		return transitionRelation;
 	}
 
 	@Override

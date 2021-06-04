@@ -11,6 +11,7 @@ import java.util.Set;
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.compiler.impl.Category;
 import com.tregouet.context_interpreter.context.IPosetOfCategories;
+import com.tregouet.context_interpreter.context.IPosetOfConstructs;
 import com.tregouet.context_interpreter.context.utils.IntentBldr;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
@@ -30,13 +31,14 @@ public class PosetOfCategories implements IPosetOfCategories {
 	private final Set<ICategory> lattice = new HashSet<ICategory>();
 	private ICategory latticeMax;
 	private final Set<ICategory> latticeAbstCat = new HashSet<ICategory>();
-	protected final Set<ICategory> latticeObj = new HashSet<ICategory>();
+	private final Set<ICategory> latticeObj = new HashSet<ICategory>();
 	private ICategory latticeMin;
 	private ICategory accept;
 	private ICategory preAccept;
 	private final Map<ICategory, Set<ICategory>> relation;
 	private final Map<ICategory, Set<ICategory>> succRelation = new HashMap<ICategory, Set<ICategory>>();
-	protected final Map<ICategory, Set<ICategory>> precRelation = new HashMap<ICategory, Set<ICategory>>();
+	private final Map<ICategory, Set<ICategory>> precRelation = new HashMap<ICategory, Set<ICategory>>();
+	private final Map<ICategory, Set<ICategory>> transitionRelation;
 	
 	public PosetOfCategories(List<IContextObject> objects) {
 		AVariable.initializeNameProvider();
@@ -49,35 +51,8 @@ public class PosetOfCategories implements IPosetOfCategories {
 		buildSuccessorRelation();
 		buildPredecessorRelation();
 		updateCategoryRanks();
-	}
-	
-	protected PosetOfCategories(List<IContextObject> objects, Map<ICategory, Set<ICategory>> relation) {
-		this.objects = objects;
-		for (ICategory cat : relation.keySet()) {
-			switch (cat.type()) {
-				case ICategory.LATT_OBJ :
-					latticeObj.add(cat);
-					lattice.add(cat);
-					break;
-				case ICategory.LATT_CAT : 
-					latticeAbstCat.add(cat);
-					lattice.add(cat);
-					break;
-				case ICategory.LATT_MAX :
-					latticeMax = cat;
-					lattice.add(cat);
-					break;
-				case ICategory.PREACCEPT :
-					preAccept = cat;
-					break;
-				case ICategory.ACCEPT :
-					accept = cat;
-					break;
-			}
-		}
-		this.relation = relation;
-		buildSuccessorRelation();
-		buildPredecessorRelation();
+		IPosetOfConstructs posetOfConstructs = new PosetOfConstructs(this);
+		transitionRelation = posetOfConstructs.getTransitionRelationOverCategories();
 	}
 	
 	public int compare(ICategory cat1, ICategory cat2) {
@@ -94,10 +69,17 @@ public class PosetOfCategories implements IPosetOfCategories {
 		return accept;
 	}
 	
+	@Override
+	public Set<ICategory> getAllCategoriesExceptLatticeMinimum() {
+		Set<ICategory> allButMin = new HashSet<>(relation.keySet());
+		allButMin.remove(latticeMin);
+		return allButMin;
+	}
+	
 	public Set<ICategory> getCategories(){
 		return relation.keySet();
 	}
-	
+
 	public Map<ICategory, Set<ICategory>> getCategoryLatticeSuccRel() {
 		Map<ICategory, Set<ICategory>> latticeSuccRel = 
 				new HashMap<ICategory, Set<ICategory>>(succRelation);
@@ -109,11 +91,11 @@ public class PosetOfCategories implements IPosetOfCategories {
 	public ICategory getCatLatticeMax() {
 		return latticeMax;
 	}
-
+	
 	public ICategory getCatLatticeMin() {
 		return latticeMin;
 	}
-	
+
 	@Override
 	public Map<IConstruct, ICategory> getConstructToCategoryMap() {
 		Set<ICategory> allCategoriesExceptMinimum = new HashSet<ICategory>(relation.keySet());
@@ -126,7 +108,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		}
 		return constructToCategory;
 	}
-
+	
 	public Set<ICategory> getLattice(){
 		return lattice;
 	}
@@ -138,7 +120,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 	@Override
 	public Set<ICategory> getLowerBounds(ICategory category) {
 		return relation.get(category);
-	}
+	}	
 	
 	public Set<ICategory> getObjectCategories() {
 		return latticeObj;
@@ -147,12 +129,12 @@ public class PosetOfCategories implements IPosetOfCategories {
 	@Override
 	public List<IContextObject> getObjects() {
 		return objects;
-	}	
+	}
 	
 	public ICategory getPreAcceptCategory() {
 		return preAccept;
 	}
-	
+
 	public Map<ICategory, Set<ICategory>> getPrecRelOverCategories() {
 		return precRelation;
 	}
@@ -170,18 +152,23 @@ public class PosetOfCategories implements IPosetOfCategories {
 	public Set<List<ICategory>> getSpanningChains() {
 		return continueSpanningChains(getAcceptCategory());
 	}
+	
+	
 
 	@Override
 	public Set<ICategory> getSuccessors(ICategory category) {
 		return succRelation.get(category);
 	}
-	
-	
 
 	public Map<ICategory, Set<ICategory>> getSuccRelOverCategories() {
 		return succRelation;
 	}
 
+	@Override
+	public Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories() {
+		return transitionRelation;
+	}
+	
 	@Override
 	public Set<ICategory> getUpperBounds(ICategory category) {
 		Set<ICategory> upperBounds = new HashSet<ICategory>();
@@ -191,7 +178,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		}
 		return upperBounds;
 	}
-
+	
 	private void addAcceptAndPreAcceptCatToRelation() {
 		Set<ICategory> preAcceptSubCat = new HashSet<ICategory>(lattice);
 		Set<ICategory> acceptSubCat = new HashSet<ICategory>(lattice);
@@ -199,7 +186,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		relation.put(preAccept, preAcceptSubCat);
 		relation.put(accept, acceptSubCat);
 	}
-	
+
 	private void buildCategoryLatticeStrictPartialOrderRelation() {
 		Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents = buildIntentToExtentRel();
 		for (Entry<Set<IConstruct>, Set<IContextObject>> entry : intentsToExtents.entrySet()) {
@@ -233,7 +220,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 			}
 		}
 	}
-	
+
 	private Map<Set<IConstruct>, Set<IContextObject>> buildIntentToExtentRel() {
 		Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents = 
 				new HashMap<Set<IConstruct>, Set<IContextObject>>();
@@ -279,7 +266,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 				precRelation.get(succCat).add(cat);
 		}
 	}
-
+	
 	private void buildSuccessorRelation() {
 		for (ICategory cat : relation.keySet())
 			succRelation.put(cat, new HashSet<ICategory>(relation.get(cat)));
@@ -314,7 +301,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 		}
 		return chains;
 	}
-	
+
 	private void instantiateAcceptCategory() {
 		ISymbol variable = new Variable(!AVariable.DEFERRED_NAMING);
 		List<ISymbol> acceptProg = new ArrayList<ISymbol>();

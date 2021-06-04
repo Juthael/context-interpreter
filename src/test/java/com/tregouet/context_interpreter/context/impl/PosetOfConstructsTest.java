@@ -60,7 +60,6 @@ public class PosetOfConstructsTest {
 							expected = false;
 						break;
 					case IPosetOfConstructs.SAME_AS : 
-						//no use since it should never happen
 						if (!cat1.equals(cat2) || !c1.equals(c2))
 							expected = false;
 						break;
@@ -117,7 +116,17 @@ public class PosetOfConstructsTest {
 	public void whenSpanningChainsRequestedThenReallySpanning() {
 		boolean spanning = true;
 		Set<List<IConstruct>> spanningChains = constRel3.getSpanningChains();
+		/*
+		int chainIdx = 1;
+		System.out.println("**********SPANNING CHAINS**********");
+		*/
 		for (List<IConstruct> spanningChain : spanningChains) {
+			/*
+			System.out.println(System.lineSeparator() + "SPANNING CHAIN N°" + chainIdx++ + " : ");
+			for (IConstruct construct : spanningChain)
+				System.out.println(construct.toString());
+			System.out.print(System.lineSeparator());
+			*/
 			if (!spanningChain.get(0).equals(constRel3.getMaximum()) 
 					|| !constRel3.getMinima().contains(spanningChain.get(spanningChain.size() - 1)))
 				spanning = false;
@@ -126,18 +135,30 @@ public class PosetOfConstructsTest {
 	}
 	
 	@Test
-	public void whenSpanningChainsrequestedThenOneOreMoreChainForEachLeaf() {
-		boolean oneOreMore = true;
-		Map<IConstruct, Set<List<IConstruct>>> minToChain = new HashMap<IConstruct, Set<List<IConstruct>>>();
-		for (IConstruct minimal : constRel3.getMinima())
-			minToChain.put(minimal, new HashSet<List<IConstruct>>());
-		for (List<IConstruct> spanningChain : constRel3.getSpanningChains())
-			minToChain.get(spanningChain.get(spanningChain.size() - 1)).add(spanningChain);
-		for (IConstruct minimal : minToChain.keySet()) {
-			if (minToChain.get(minimal).isEmpty())
-				oneOreMore = false;
+	public void whenSpanningChainsrequestedThenEachConstructBelongsTo1ChainAtLeast() {
+		boolean oneAtLeast = true;
+		Map<IConstruct, Set<List<IConstruct>>> constructToChain 
+			= new HashMap<IConstruct, Set<List<IConstruct>>>();
+		for (IConstruct construct : constRel3.getRelation().keySet())
+			constructToChain.put(construct, new HashSet<List<IConstruct>>());
+		for (List<IConstruct> spanningChain : constRel3.getSpanningChains()){
+			for (IConstruct chainElem : spanningChain) {
+				constructToChain.get(chainElem).add(spanningChain);
+			}
 		}
-		assertTrue(oneOreMore);
+		for (IConstruct construct1 : constructToChain.keySet()) {
+			if (constructToChain.get(construct1).isEmpty())
+				oneAtLeast = false;
+			/*
+			System.out.println(System.lineSeparator() + "NEW CONSTRUCT : " + construct1.toString());
+			for (List<IConstruct> chain : constructToChain.get(construct1)) {
+				System.out.println("***New Chain : ");
+				for (IConstruct chainElem : chain)
+					System.out.println(chainElem.toString());
+			}
+			*/
+		}
+		assertTrue(oneAtLeast);
 	}
 	
 	@Test
@@ -153,9 +174,68 @@ public class PosetOfConstructsTest {
 	}
 	
 	@Test
-	public void whenFilteredPosetRequestedThenReturned() {
-		IPosetOfCategories filteredPoset = constRel3.getFilteredPosetOfCategories();
-		assertTrue(true);
+	public void whenTransitionRelOverCatsReturnedThenSameSpanningChainsOfConstructsAsOriginalPoset() {
+		Set<List<IConstruct>> chainsOfOriginal = constRel3.getSpanningChains();
+		Map<ICategory, Set<ICategory>> transitionRel = constRel3.getTransitionRelationOverCategories();
+		Map<IConstruct, Set<IConstruct>>
+	}
+	
+	@Test
+	public void whenTransitionRelOverCatsReturnedThenConstainsEveryCatExceptMinimum() {
+		Set<ICategory> catsFromTransitionRel = constRel3.getTransitionRelationOverCategories().keySet();
+		assertTrue(catsFromTransitionRel.equals(catRel3.getAllCategoriesExceptLatticeMinimum()));
+	}
+	
+	@Test
+	public void whenTransitionRelOverCatsReturnedThenSubRelationOfOriginalRelation() {
+		boolean subRelationOfOriginalPoset = true;
+		Map<ICategory, Set<ICategory>> relationOverCats = catRel3.getRelOverCategories();
+		Map<ICategory, Set<ICategory>> transitionRelationOverCats 
+			= constRel3.getTransitionRelationOverCategories();
+		for(ICategory cat : transitionRelationOverCats.keySet()) {
+			/*
+			System.out.println(System.lineSeparator() + "****NEW CATEGORY****");
+			System.out.println("***original relation subcategory hashcodes :");
+			for (ICategory cat1 : relationOverCats.get(cat))
+				System.out.println(cat1.hashCode());
+			System.out.println("***transition relation relation subcategory hashcodes :");
+			for (ICategory cat2 : transitionRelationOverCats.get(cat))
+				System.out.println(cat2.hashCode());
+			*/
+			if (!relationOverCats.get(cat).containsAll(transitionRelationOverCats.get(cat)))
+				subRelationOfOriginalPoset = false;				
+		}
+		assertTrue(subRelationOfOriginalPoset);
+	}
+	
+	@Test
+	public void whenTransitionRelOverCatsReturnedThenContainsSuccRelation() {
+		//Except than lattice minimum is removed from transition relation
+		boolean containsSuccRelation = true;
+		Map<ICategory, Set<ICategory>> transitionRelation = constRel3.getTransitionRelationOverCategories();
+		Map<ICategory, Set<ICategory>> succRelationOverCats = catRel3.getSuccRelOverCategories();
+		Map<ICategory, Set<ICategory>> succRelationWithNoMin = new HashMap<ICategory, Set<ICategory>>();
+		for (ICategory curr : succRelationOverCats.keySet()) {
+			if (!curr.equals(catRel3.getCatLatticeMin())) {
+				Set<ICategory> relatedExceptMin = new HashSet<ICategory>(succRelationOverCats.get(curr));
+				relatedExceptMin.remove(catRel3.getCatLatticeMin());
+				succRelationWithNoMin.put(curr, relatedExceptMin);
+			}
+		}
+		for (ICategory cat : transitionRelation.keySet()) {
+			/*
+			System.out.println(System.lineSeparator() + "****NEW CATEGORY****");
+			System.out.println("***transition relation subcategory hashcodes :");
+			for (ICategory cat1 : transitionRelation.get(cat))
+				System.out.println(cat1.hashCode());
+			System.out.println("***successor relation subcategory hashcodes :");
+			for (ICategory cat2 : succRelationWithNoMin.get(cat))
+				System.out.println(cat2.hashCode());
+				*/
+			if (!transitionRelation.get(cat).containsAll(succRelationWithNoMin.get(cat)))
+				containsSuccRelation = false;
+		}
+		assertTrue(containsSuccRelation);
 	}
 	
 }
