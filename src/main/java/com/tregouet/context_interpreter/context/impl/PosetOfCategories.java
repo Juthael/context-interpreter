@@ -290,7 +290,7 @@ public class PosetOfCategories implements IPosetOfCategories {
 			}
 			for (List<ICategory> subchain : subchains){
 				List<ICategory> nextChain = new ArrayList<>(subchain);
-				nextChain.add(0, category);
+				nextChain.add(category);
 				chains.add(nextChain);
 			}
 		}

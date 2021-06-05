@@ -36,6 +36,21 @@ public class PosetOfConstructsTest {
 	}
 	
 	@Test
+	public void whenCategoryOfSpecifiedConstructRequestedThenExpectedReturned() {
+		boolean expectedReturned = true;
+		Set<ICategory> allNonMinimumCategories = catRel3.getCategories();
+		allNonMinimumCategories.remove(catRel3.getCatLatticeMin());
+		for (ICategory currCat : catRel3.getCategories()) {
+			for (IConstruct currConst : currCat.getIntent()) {
+				ICategory returned = constRel3.getCategoryOf(currConst);
+				if (!returned.equals(currCat))
+					expectedReturned = false;
+			}
+		}
+		assertTrue(expectedReturned);
+	}
+	
+	@Test
 	public void whenConstructsComparedThenResultAsExpected() {
 		boolean expected = true;
 		List<IConstruct> constructs = new ArrayList<IConstruct>(constRel3.getRelation().keySet());
@@ -85,21 +100,6 @@ public class PosetOfConstructsTest {
 	}
 	
 	@Test
-	public void whenCategoryOfSpecifiedConstructRequestedThenExpectedReturned() {
-		boolean expectedReturned = true;
-		Set<ICategory> allNonMinimumCategories = catRel3.getCategories();
-		allNonMinimumCategories.remove(catRel3.getCatLatticeMin());
-		for (ICategory currCat : catRel3.getCategories()) {
-			for (IConstruct currConst : currCat.getIntent()) {
-				ICategory returned = constRel3.getCategoryOf(currConst);
-				if (!returned.equals(currCat))
-					expectedReturned = false;
-			}
-		}
-		assertTrue(expectedReturned);
-	}
-	
-	@Test
 	public void whenMinimaRequestedThenUnionOfObjIntentsReturned() {
 		Set<IConstruct> minima = constRel3.getMinima();
 		Set<IConstruct> unionOfObjIntents = new HashSet<IConstruct>();
@@ -113,25 +113,33 @@ public class PosetOfConstructsTest {
 	}
 	
 	@Test
-	public void whenSpanningChainsRequestedThenReallySpanning() {
-		boolean spanning = true;
-		Set<List<IConstruct>> spanningChains = constRel3.getSpanningChains();
-		/*
-		int chainIdx = 1;
-		System.out.println("**********SPANNING CHAINS**********");
-		*/
-		for (List<IConstruct> spanningChain : spanningChains) {
-			/*
-			System.out.println(System.lineSeparator() + "SPANNING CHAIN N°" + chainIdx++ + " : ");
-			for (IConstruct construct : spanningChain)
-				System.out.println(construct.toString());
-			System.out.print(System.lineSeparator());
-			*/
-			if (!spanningChain.get(0).equals(constRel3.getMaximum()) 
-					|| !constRel3.getMinima().contains(spanningChain.get(spanningChain.size() - 1)))
-				spanning = false;
+	public void whenRequestedThenTransitionRelOverCatsYieldsOriginalSpanningChainsOfConstructsPlusNewOnes() {
+		Set<List<IConstruct>> constructChainsFromOriginalRelOverCats = constRel3.getSpanningChains();
+		//set construct chains from transition relation over categories
+		Set<List<IConstruct>> constructChainsFromTransitionRelOverCats;
+		//.set transition relation over categories
+		Map<ICategory, Set<ICategory>> transitionRel = constRel3.getTransitionRelationOverCategories();
+		//.set restricted relation over constructs (filtered by transition relation over categories)
+		Map<IConstruct, Set<IConstruct>> transitionConstructRel = new HashMap<IConstruct, Set<IConstruct>>();
+		for (IConstruct construct : constRel3.getRelation().keySet()) {
+			transitionConstructRel.put(construct, new HashSet<IConstruct>());
 		}
-		assertTrue(spanning);
+		for (ICategory cat : transitionRel.keySet()) {
+			Set<IConstruct> catIntent = cat.getIntent();
+			Set<IConstruct> subCatConstructs = new HashSet<IConstruct>();
+			for (ICategory subCat : transitionRel.get(cat))
+				subCatConstructs.addAll(subCat.getIntent());
+			for (IConstruct construct : catIntent) {
+				for (IConstruct subCatConstruct : subCatConstructs) {
+					if (IPosetOfConstructs.generates(construct, subCatConstruct))
+						transitionConstructRel.get(construct).add(subCatConstruct);
+				}
+			}
+		}
+		//.set spanning chains of constructs according to restricted relation
+		constructChainsFromTransitionRelOverCats = continueChain(constRel3.getMaximum(), transitionConstructRel);
+		assertTrue(constructChainsFromTransitionRelOverCats.containsAll(constructChainsFromOriginalRelOverCats)
+				&& !constructChainsFromOriginalRelOverCats.containsAll(constructChainsFromTransitionRelOverCats));
 	}
 	
 	@Test
@@ -162,6 +170,28 @@ public class PosetOfConstructsTest {
 	}
 	
 	@Test
+	public void whenSpanningChainsRequestedThenReallySpanning() {
+		boolean spanning = true;
+		Set<List<IConstruct>> spanningChains = constRel3.getSpanningChains();
+		/*
+		int chainIdx = 1;
+		System.out.println("**********SPANNING CHAINS**********");
+		*/
+		for (List<IConstruct> spanningChain : spanningChains) {
+			/*
+			System.out.println(System.lineSeparator() + "SPANNING CHAIN N°" + chainIdx++ + " : ");
+			for (IConstruct construct : spanningChain)
+				System.out.println(construct.toString());
+			System.out.print(System.lineSeparator());
+			*/
+			if (!spanningChain.get(0).equals(constRel3.getMaximum()) 
+					|| !constRel3.getMinima().contains(spanningChain.get(spanningChain.size() - 1)))
+				spanning = false;
+		}
+		assertTrue(spanning);
+	}
+	
+	@Test
 	public void whenSuccessorRequestedThenReturnedIsAnInstanceOfParam() {
 		boolean succAreInstances = true;
 		for (IConstruct construct : constRel3.getRelation().keySet()) {
@@ -174,39 +204,10 @@ public class PosetOfConstructsTest {
 	}
 	
 	@Test
-	public void whenTransitionRelOverCatsReturnedThenSameSpanningChainsOfConstructsAsOriginalPoset() {
-		Set<List<IConstruct>> chainsOfOriginal = constRel3.getSpanningChains();
-		Map<ICategory, Set<ICategory>> transitionRel = constRel3.getTransitionRelationOverCategories();
-		Map<IConstruct, Set<IConstruct>>
-	}
-	
-	@Test
 	public void whenTransitionRelOverCatsReturnedThenConstainsEveryCatExceptMinimum() {
 		Set<ICategory> catsFromTransitionRel = constRel3.getTransitionRelationOverCategories().keySet();
 		assertTrue(catsFromTransitionRel.equals(catRel3.getAllCategoriesExceptLatticeMinimum()));
-	}
-	
-	@Test
-	public void whenTransitionRelOverCatsReturnedThenSubRelationOfOriginalRelation() {
-		boolean subRelationOfOriginalPoset = true;
-		Map<ICategory, Set<ICategory>> relationOverCats = catRel3.getRelOverCategories();
-		Map<ICategory, Set<ICategory>> transitionRelationOverCats 
-			= constRel3.getTransitionRelationOverCategories();
-		for(ICategory cat : transitionRelationOverCats.keySet()) {
-			/*
-			System.out.println(System.lineSeparator() + "****NEW CATEGORY****");
-			System.out.println("***original relation subcategory hashcodes :");
-			for (ICategory cat1 : relationOverCats.get(cat))
-				System.out.println(cat1.hashCode());
-			System.out.println("***transition relation relation subcategory hashcodes :");
-			for (ICategory cat2 : transitionRelationOverCats.get(cat))
-				System.out.println(cat2.hashCode());
-			*/
-			if (!relationOverCats.get(cat).containsAll(transitionRelationOverCats.get(cat)))
-				subRelationOfOriginalPoset = false;				
-		}
-		assertTrue(subRelationOfOriginalPoset);
-	}
+	}	
 	
 	@Test
 	public void whenTransitionRelOverCatsReturnedThenContainsSuccRelation() {
@@ -236,6 +237,52 @@ public class PosetOfConstructsTest {
 				containsSuccRelation = false;
 		}
 		assertTrue(containsSuccRelation);
+	}
+	
+	@Test
+	public void whenTransitionRelOverCatsReturnedThenSubRelationOfOriginalRelation() {
+		boolean subRelationOfOriginalPoset = true;
+		Map<ICategory, Set<ICategory>> relationOverCats = catRel3.getRelOverCategories();
+		Map<ICategory, Set<ICategory>> transitionRelationOverCats 
+			= constRel3.getTransitionRelationOverCategories();
+		for(ICategory cat : transitionRelationOverCats.keySet()) {
+			/*
+			System.out.println(System.lineSeparator() + "****NEW CATEGORY****");
+			System.out.println("***original relation subcategory hashcodes :");
+			for (ICategory cat1 : relationOverCats.get(cat))
+				System.out.println(cat1.hashCode());
+			System.out.println("***transition relation relation subcategory hashcodes :");
+			for (ICategory cat2 : transitionRelationOverCats.get(cat))
+				System.out.println(cat2.hashCode());
+			*/
+			if (!relationOverCats.get(cat).containsAll(transitionRelationOverCats.get(cat)))
+				subRelationOfOriginalPoset = false;				
+		}
+		assertTrue(subRelationOfOriginalPoset);
+	}
+	
+	private Set<List<IConstruct>> continueChain(
+			IConstruct paramConstruct, Map<IConstruct, Set<IConstruct>> transitionConstructRelation){
+		Set<List<IConstruct>> returnedChains = new HashSet<List<IConstruct>>();
+		Set<List<IConstruct>> continuedChains = new HashSet<List<IConstruct>>();
+		Set<IConstruct> paramSubConstructs = transitionConstructRelation.get(paramConstruct);
+		if (!paramSubConstructs.isEmpty()) {
+			for (IConstruct paramSubConstruct : paramSubConstructs){
+				returnedChains.addAll(continueChain(paramSubConstruct, transitionConstructRelation));
+			}
+			for (List<IConstruct> returnedChain : returnedChains) {
+				List<IConstruct> continuedChain = new ArrayList<IConstruct>();
+				continuedChain.add(paramConstruct);
+				continuedChain.addAll(returnedChain);
+				continuedChains.add(continuedChain);
+			}
+		}
+		else {
+			List<IConstruct> newChain = new ArrayList<>();
+			newChain.add(paramConstruct);
+			continuedChains.add(newChain);
+		}
+		return continuedChains;
 	}
 	
 }

@@ -6,10 +6,12 @@ import static org.junit.Assert.fail;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.junit.Before;
@@ -17,6 +19,7 @@ import org.junit.Test;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.context.IPosetOfCategories;
+import com.tregouet.context_interpreter.context.IPosetOfConstructs;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
@@ -39,6 +42,22 @@ public class PosetOfCategoriesTest {
 	}
 
 	@Test
+	public void whenCategoriesReturnedThenContains1Accept1PreacceptCatAnd1LatticeMaxCat() {
+		int nbOfAcceptCat = 0;
+		int nbOfPreAcceptCat = 0;
+		int nbOfLatticeMaxCat = 0;
+		for (ICategory cat : catRel3.getCategories()) {
+			if (cat.type() == ICategory.ACCEPT)
+				nbOfAcceptCat++;
+			else if (cat.type() == ICategory.PREACCEPT)
+				nbOfPreAcceptCat++;
+			else if (cat.type() == ICategory.LATT_MAX)
+				nbOfLatticeMaxCat++;
+		}
+		assertTrue ((nbOfAcceptCat == 1) && (nbOfPreAcceptCat == 1) && (nbOfLatticeMaxCat == 1));
+	}
+	
+	@Test
 	public void whenCategoriesReturnedThenEachHasDistinctIntent() {
 		boolean allIntentsAreDistinct = true;
 		List<ICategory> categories = new ArrayList<ICategory>(catRel3.getCategories());
@@ -49,19 +68,6 @@ public class PosetOfCategoriesTest {
 			}
 		}
 		assertTrue(allIntentsAreDistinct);
-	}
-	
-	@Test
-	public void whenLatticeCategoriesReturnedThenEachHasDistinctExtent() {
-		boolean allExtentsAreDistinct = true;
-		List<ICategory> categories = new ArrayList<ICategory>(catRel3.getLatticeAbstCategories());
-		for (int i = 0 ; i < categories.size() ; i++) {
-			for (int j = i+1 ; j < categories.size() ; j++) {
-				if (categories.get(i).getExtent().equals(categories.get(j).getExtent()))
-					allExtentsAreDistinct  = false;
-			}
-		}
-		assertTrue(allExtentsAreDistinct);
 	}
 	
 	@Test
@@ -91,19 +97,16 @@ public class PosetOfCategoriesTest {
 	}
 	
 	@Test
-	public void whenCategoriesReturnedThenContains1Accept1PreacceptCatAnd1LatticeMaxCat() {
-		int nbOfAcceptCat = 0;
-		int nbOfPreAcceptCat = 0;
-		int nbOfLatticeMaxCat = 0;
-		for (ICategory cat : catRel3.getCategories()) {
-			if (cat.type() == ICategory.ACCEPT)
-				nbOfAcceptCat++;
-			else if (cat.type() == ICategory.PREACCEPT)
-				nbOfPreAcceptCat++;
-			else if (cat.type() == ICategory.LATT_MAX)
-				nbOfLatticeMaxCat++;
+	public void whenLatticeCategoriesReturnedThenEachHasDistinctExtent() {
+		boolean allExtentsAreDistinct = true;
+		List<ICategory> categories = new ArrayList<ICategory>(catRel3.getLatticeAbstCategories());
+		for (int i = 0 ; i < categories.size() ; i++) {
+			for (int j = i+1 ; j < categories.size() ; j++) {
+				if (categories.get(i).getExtent().equals(categories.get(j).getExtent()))
+					allExtentsAreDistinct  = false;
+			}
 		}
-		assertTrue ((nbOfAcceptCat == 1) && (nbOfPreAcceptCat == 1) && (nbOfLatticeMaxCat == 1));
+		assertTrue(allExtentsAreDistinct);
 	}	
 	
 	@Test
@@ -161,6 +164,75 @@ public class PosetOfCategoriesTest {
 		assertTrue(eachCatPairHasAnInfimum && eachCatPairHasASupremum);
 	}
 	
+	@Test
+	public void whenTransitionRelationReturnedThenIsASubsetOfOriginalRelationOverCats() {
+		boolean isASubset = true;
+		Map<ICategory, Set<ICategory>> relation = catRel3.getRelOverCategories();
+		Map<ICategory, Set<ICategory>> transitionRelation = catRel3.getTransitionRelationOverCategories();
+		for (ICategory cat : transitionRelation.keySet()) {
+			if (!relation.containsKey(cat))
+				isASubset = false;
+			else if (!relation.get(cat).containsAll(transitionRelation.get(cat)))
+				isASubset = false;
+			/*
+			int diff = relation.get(cat).size() - transitionRelation.get(cat).size();
+			System.out.println("original / transition relation diff : " + diff);
+			*/
+		}
+		assertTrue(isASubset);
+	}
+	
+	@Test
+	public void whenTransitionRelationReturnedThenContainsRetrictedSuccessorRelationOverCats() {
+		//Successor relation is restricted to the set of all categories but the minimum
+		boolean containsSuccRelation = true;
+		Map<ICategory, Set<ICategory>> succRelation = catRel3.getSuccRelOverCategories();
+		//set restriction
+		Map<ICategory, Set<ICategory>> restrictedSuccRelation = new HashMap<ICategory, Set<ICategory>>();
+		for (Entry<ICategory, Set<ICategory>> succEntry : succRelation.entrySet()) {
+			if (!succEntry.getKey().equals(catRel3.getCatLatticeMin())) {
+				Set<ICategory> relatedMinusMin = new HashSet<ICategory>(succEntry.getValue());
+				relatedMinusMin.remove(catRel3.getCatLatticeMin());
+				restrictedSuccRelation.put(succEntry.getKey(), relatedMinusMin);
+			}
+		}
+		//test
+		Map<ICategory, Set<ICategory>> transitionRelation = catRel3.getTransitionRelationOverCategories();
+		for (ICategory cat : restrictedSuccRelation.keySet()) {
+			if (!transitionRelation.containsKey(cat))
+				containsSuccRelation = false;
+			else if (!transitionRelation.get(cat).containsAll(restrictedSuccRelation.get(cat)))
+				containsSuccRelation = false;
+			/*
+			int diff = transitionRelation.get(cat).size() - restrictedSuccRelation.get(cat).size(); 
+			if (diff != 0) {
+				System.out.println("category of interest : ");
+				for (IConstruct catConstr : cat.getIntent()) {
+					System.out.println(catConstr.toString());
+				}
+				System.out.println(System.lineSeparator() + "lattice max intent : ");
+				for (IConstruct maxConstr : catRel3.getCatLatticeMax().getIntent()) {
+					System.out.println(maxConstr.toString());
+				}
+				System.out.println(System.lineSeparator() + "transition / succ relation diff : " + diff);
+				System.out.print(System.lineSeparator() + "****Related in transition relation :");
+				for (ICategory transRelated : transitionRelation.get(cat)) {
+					System.out.println(System.lineSeparator() + "*New related category : ");
+					for (IConstruct transRelatedConstr : transRelated.getIntent())
+						System.out.println(transRelatedConstr.toString());
+				}
+				System.out.println(System.lineSeparator() + "****Related in successor relation :");
+				for (ICategory succRelated : restrictedSuccRelation.get(cat)) {
+					System.out.println(System.lineSeparator() + "*New related category : ");
+					for (IConstruct succRelatedConstr : succRelated.getIntent())
+						System.out.println(succRelatedConstr.toString());
+				}
+			}
+			*/
+		}
+		assertTrue(containsSuccRelation);
+	}
+	
 	
 	private void printCategories(IPosetOfCategories catRel) {
 		int maxRank = catRel.getAcceptCategory().rank();
@@ -182,5 +254,7 @@ public class PosetOfCategoriesTest {
 			}
 		}
 	}
+	
+
 
 }

@@ -69,10 +69,10 @@ public class IntentBldrTest {
 		Set<IConstruct> betaGammaIntent = IntentBldr.getIntent(betaGamma);
 		Set<IConstruct> betaGammaExpected = setBetaGammaExpected();
 		boolean betaGammaIntentAsExpected = betaGammaIntent.equals(betaGammaExpected);
-		
+		/*
 		for (IConstruct construct : alphaBetaGammaIntent)
 			System.out.println(construct.toString());
-		
+		*/
 		assertTrue(alphaBetaGammaIntentAsExpected 
 				&& alphaBetaIntentAsExpected
 				&& alphaGammaIntentAsExpected
@@ -101,15 +101,68 @@ public class IntentBldrTest {
 		assertTrue(asExpected);
 	}
 	
-	private Map<String, Set<String>> setStringMap(Map<ISymbolSeq, Set<ISymbolSeq>> sqToMaxSubsq){
-		Map<String, Set<String>> stringMap = new HashMap<String, Set<String>>();
-		for (ISymbolSeq seq : sqToMaxSubsq.keySet()) {
-			Set<String> maxSubsqString = new HashSet<String>();
-			for (ISymbolSeq maxSubsq : sqToMaxSubsq.get(seq))
-				maxSubsqString.add(maxSubsq.toString());
-			stringMap.put(seq.toString(), maxSubsqString);
-		}
-		return stringMap;
+	private Set<IConstruct> setAlphaBetaExpected(){
+		Set<IConstruct> expected = new HashSet<IConstruct>();
+		Set<String> maxSubsqsString = new HashSet<String>();
+		maxSubsqsString.add("figure forme _");
+		maxSubsqsString.add("figure trait épaisseur _");
+		maxSubsqsString.add("figure trait couleur _");
+		maxSubsqsString.add("figure _ couleur rouge");
+		maxSubsqsString.add("figure _ couleur bleu");
+		maxSubsqsString.add("figure fond _ couleur _");
+		maxSubsqsString.add("figure fond _");
+		for (String maxSubsq : maxSubsqsString)
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
+		return expected;
+	}
+	
+	private Set<IConstruct> setAlphaBetaGammaExpected(){
+		Set<IConstruct> expected = new HashSet<IConstruct>();
+		Set<String> maxSubsqsString = new HashSet<String>();
+		maxSubsqsString.add("figure forme _");
+		maxSubsqsString.add("figure trait épaisseur _");
+		maxSubsqsString.add("figure trait couleur _");
+		maxSubsqsString.add("figure _ couleur bleu");
+		maxSubsqsString.add("figure fond _");
+		maxSubsqsString.add("figure fond _ couleur _");
+		for (String maxSubsq : maxSubsqsString)
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
+		return expected;
+	}
+	
+	private Set<IConstruct> setAlphaGammaExpected(){
+		Set<IConstruct> expected = new HashSet<IConstruct>();
+		Set<String> maxSubsqsString = new HashSet<String>();
+		maxSubsqsString.add("figure forme _");
+		maxSubsqsString.add("figure trait épaisseur épais");
+		maxSubsqsString.add("figure trait couleur _");
+		maxSubsqsString.add("figure fond _");
+		maxSubsqsString.add("figure _ couleur bleu");
+		maxSubsqsString.add("figure fond _ couleur _");
+		for (String maxSubsq : maxSubsqsString)
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
+		return expected;
+	}
+	
+	private Set<IConstruct> setBetaGammaExpected(){
+		Set<IConstruct> expected = new HashSet<IConstruct>();
+		Set<String> maxSubsqsString = new HashSet<String>();
+		maxSubsqsString.add("figure forme triangle");
+		maxSubsqsString.add("figure trait épaisseur _");
+		maxSubsqsString.add("figure trait couleur bleu");
+		maxSubsqsString.add("figure fond rayures orientation _");
+		maxSubsqsString.add("figure fond rayures couleur _");
+		for (String maxSubsq : maxSubsqsString)
+			if (maxSubsq.contains("_"))
+				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
+			else expected.add(new Construct(maxSubsq.split(" ")));
+		return expected;
 	}
 	
 	private Map<String, Set<String>> setExpectedStringMap(){
@@ -208,68 +261,15 @@ public class IntentBldrTest {
 		return expected;
 	}
 	
-	private Set<IConstruct> setAlphaBetaGammaExpected(){
-		Set<IConstruct> expected = new HashSet<IConstruct>();
-		Set<String> maxSubsqsString = new HashSet<String>();
-		maxSubsqsString.add("figure forme _");
-		maxSubsqsString.add("figure trait épaisseur _");
-		maxSubsqsString.add("figure trait couleur _");
-		maxSubsqsString.add("figure _ couleur bleu");
-		maxSubsqsString.add("figure fond _");
-		maxSubsqsString.add("figure fond _ couleur _");
-		for (String maxSubsq : maxSubsqsString)
-			if (maxSubsq.contains("_"))
-				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
-			else expected.add(new Construct(maxSubsq.split(" ")));
-		return expected;
-	}
-	
-	private Set<IConstruct> setAlphaBetaExpected(){
-		Set<IConstruct> expected = new HashSet<IConstruct>();
-		Set<String> maxSubsqsString = new HashSet<String>();
-		maxSubsqsString.add("figure forme _");
-		maxSubsqsString.add("figure trait épaisseur _");
-		maxSubsqsString.add("figure trait couleur _");
-		maxSubsqsString.add("figure _ couleur rouge");
-		maxSubsqsString.add("figure _ couleur bleu");
-		maxSubsqsString.add("figure fond _ couleur _");
-		maxSubsqsString.add("figure fond _");
-		for (String maxSubsq : maxSubsqsString)
-			if (maxSubsq.contains("_"))
-				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
-			else expected.add(new Construct(maxSubsq.split(" ")));
-		return expected;
-	}
-	
-	private Set<IConstruct> setAlphaGammaExpected(){
-		Set<IConstruct> expected = new HashSet<IConstruct>();
-		Set<String> maxSubsqsString = new HashSet<String>();
-		maxSubsqsString.add("figure forme _");
-		maxSubsqsString.add("figure trait épaisseur épais");
-		maxSubsqsString.add("figure trait couleur _");
-		maxSubsqsString.add("figure fond _");
-		maxSubsqsString.add("figure _ couleur bleu");
-		maxSubsqsString.add("figure fond _ couleur _");
-		for (String maxSubsq : maxSubsqsString)
-			if (maxSubsq.contains("_"))
-				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
-			else expected.add(new Construct(maxSubsq.split(" ")));
-		return expected;
-	}
-	
-	private Set<IConstruct> setBetaGammaExpected(){
-		Set<IConstruct> expected = new HashSet<IConstruct>();
-		Set<String> maxSubsqsString = new HashSet<String>();
-		maxSubsqsString.add("figure forme triangle");
-		maxSubsqsString.add("figure trait épaisseur _");
-		maxSubsqsString.add("figure trait couleur bleu");
-		maxSubsqsString.add("figure fond rayures orientation _");
-		maxSubsqsString.add("figure fond rayures couleur _");
-		for (String maxSubsq : maxSubsqsString)
-			if (maxSubsq.contains("_"))
-				expected.add(new AbstractConstruct(maxSubsq.split(" ")));
-			else expected.add(new Construct(maxSubsq.split(" ")));
-		return expected;
+	private Map<String, Set<String>> setStringMap(Map<ISymbolSeq, Set<ISymbolSeq>> sqToMaxSubsq){
+		Map<String, Set<String>> stringMap = new HashMap<String, Set<String>>();
+		for (ISymbolSeq seq : sqToMaxSubsq.keySet()) {
+			Set<String> maxSubsqString = new HashSet<String>();
+			for (ISymbolSeq maxSubsq : sqToMaxSubsq.get(seq))
+				maxSubsqString.add(maxSubsq.toString());
+			stringMap.put(seq.toString(), maxSubsqString);
+		}
+		return stringMap;
 	}
 	
 	

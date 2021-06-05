@@ -31,6 +31,21 @@ public class AbstractConstructTest {
 	}
 
 	@Test
+	public void whenConstructsOfCategoriesOfTheSameContextComparedThenNeverSameHashCode() {
+		boolean equals = false;
+		Set<Integer> hashCodes = new HashSet<Integer>();
+		Set<ICategory> cats = new HashSet<ICategory>(catRel3.getCategories());
+		cats.remove(catRel3.getCatLatticeMin());
+		for (ICategory cat : cats) {
+			for (IConstruct construct : cat.getIntent()) {
+				if (!hashCodes.add(construct.hashCode()))
+					equals = true;
+			}
+		}
+		assertFalse(equals);
+	}
+	
+	@Test
 	public void whenConstructsOfNonMinumumCategoriesOfTheSameContextComparedThenNeverEquals() {
 		boolean equals = false;
 		Set<IConstruct> constructs = new HashSet<IConstruct>();
@@ -41,21 +56,6 @@ public class AbstractConstructTest {
 				if (!constructs.add(construct)) {
 					equals = true;
 				}
-			}
-		}
-		assertFalse(equals);
-	}
-	
-	@Test
-	public void whenConstructsOfCategoriesOfTheSameContextComparedThenNeverSameHashCode() {
-		boolean equals = false;
-		Set<Integer> hashCodes = new HashSet<Integer>();
-		Set<ICategory> cats = new HashSet<ICategory>(catRel3.getCategories());
-		cats.remove(catRel3.getCatLatticeMin());
-		for (ICategory cat : cats) {
-			for (IConstruct construct : cat.getIntent()) {
-				if (!hashCodes.add(construct.hashCode()))
-					equals = true;
 			}
 		}
 		assertFalse(equals);

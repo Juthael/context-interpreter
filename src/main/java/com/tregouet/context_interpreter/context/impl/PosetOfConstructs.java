@@ -134,10 +134,14 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 			chains.add(chain);
 		}
 		else {
-			for (IConstruct succ : successors)
-				chains.addAll(getChainsFrom(succ));
-			for (List<IConstruct> chain : chains)
-				chain.add(0, construct);
+			for (IConstruct succ : successors) {
+				for (List<IConstruct> chain : getChainsFrom(succ)) {
+					List<IConstruct> newChain = new ArrayList<IConstruct>();
+					newChain.add(construct);
+					newChain.addAll(chain);
+					chains.add(newChain);
+				}
+			}
 		}
 		return chains;
 	}
@@ -177,12 +181,6 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 				precRelation.get(successor).add(predecessor);
 			}
 		}
-	}
-	
-	//HERE
-	
-	IPosetOfCategories getCP() {
-		return catPoset;
 	}
 
 }
