@@ -1,4 +1,4 @@
-package com.tregouet.context_interpreter.inputs.impl;
+package com.tregouet.context_interpreter.io.inputs.exceptions;
 
 public class FileReaderException extends Exception {
 

@@ -1,4 +1,4 @@
-package com.tregouet.context_interpreter.inputs.impl;
+package com.tregouet.context_interpreter.io.inputs.impl;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.data_types.construct.impl.ContextObject;
+import com.tregouet.context_interpreter.io.inputs.exceptions.FileReaderException;
 
 /**
  * @author Gael Tregouet

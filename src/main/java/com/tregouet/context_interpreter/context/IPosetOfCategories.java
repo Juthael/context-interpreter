@@ -7,6 +7,7 @@ import java.util.Set;
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
+import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
 
 public interface IPosetOfCategories {
 	
@@ -29,6 +30,10 @@ public interface IPosetOfCategories {
 			return SUB_CATEGORY;
 		}
 	}
+	
+	boolean buildSuccessorRelationGraph() throws VisualizationException;
+	
+	boolean buildTransitionRelationGraph() throws VisualizationException;
 	
 	int compare(ICategory cat1, ICategory cat2);
 	

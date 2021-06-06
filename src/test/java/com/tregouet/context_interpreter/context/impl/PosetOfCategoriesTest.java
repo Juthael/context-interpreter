@@ -25,7 +25,8 @@ import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.data_types.construct.ISymbol;
 import com.tregouet.context_interpreter.data_types.construct.impl.AbstractConstruct;
-import com.tregouet.context_interpreter.inputs.impl.GenericFileReader;
+import com.tregouet.context_interpreter.io.inputs.impl.GenericFileReader;
+import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
 
 @SuppressWarnings("unused")
 public class PosetOfCategoriesTest {
@@ -231,6 +232,11 @@ public class PosetOfCategoriesTest {
 			*/
 		}
 		assertTrue(containsSuccRelation);
+	}
+	
+	@Test
+	public void whenGraphBuildingRequestedThenDone() throws VisualizationException {
+		assertTrue(catRel3.buildSuccessorRelationGraph());
 	}
 	
 	

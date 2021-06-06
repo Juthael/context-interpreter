@@ -19,7 +19,7 @@ import com.tregouet.context_interpreter.context.IPosetOfCategories;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
-import com.tregouet.context_interpreter.inputs.impl.GenericFileReader;
+import com.tregouet.context_interpreter.io.inputs.impl.GenericFileReader;
 
 public class PosetOfConstructsTest {
 

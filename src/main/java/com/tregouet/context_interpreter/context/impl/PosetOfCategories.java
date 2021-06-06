@@ -20,6 +20,9 @@ import com.tregouet.context_interpreter.data_types.construct.ISymbol;
 import com.tregouet.context_interpreter.data_types.construct.impl.AbstractConstruct;
 import com.tregouet.context_interpreter.data_types.construct.impl.Terminal;
 import com.tregouet.context_interpreter.data_types.construct.impl.Variable;
+import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
+import com.tregouet.context_interpreter.io.outputs.viz.IPosetOfCatGraphBuilder;
+import com.tregouet.context_interpreter.io.outputs.viz.impl.PosetOfCatGraphBuilder;
 import com.tregouet.subseq_finder.ISubseqFinder;
 import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SubseqFinder;
@@ -388,5 +391,29 @@ public class PosetOfCategories implements IPosetOfCategories {
 			for (ICategory predecessor : precRelation.get(cat))
 				updateCategoryRanks(predecessor, rank + 1);
 		}
+	}
+
+	@Override
+	public boolean buildSuccessorRelationGraph() throws VisualizationException {
+		IPosetOfCatGraphBuilder graphBuilder = new PosetOfCatGraphBuilder();
+		try {
+			graphBuilder.buildPosetOfCategoriesGraph(succRelation);
+		} catch (VisualizationException e) {
+			throw new VisualizationException("PosetOfCategories.buildSuccessorRelationGraph() : error"
+					+ System.lineSeparator() + e.getMessage());
+		}
+		return true;
+	}
+
+	@Override
+	public boolean buildTransitionRelationGraph() throws VisualizationException {
+		IPosetOfCatGraphBuilder graphBuilder = new PosetOfCatGraphBuilder();
+		try {
+			graphBuilder.buildPosetOfCategoriesGraph(transitionRelation);
+		} catch (VisualizationException e) {
+			throw new VisualizationException("PosetOfCategories.buildTransitionRelationGraph() : error"
+					+ System.lineSeparator() + e.getMessage());
+		}
+		return false;
 	}
 }
