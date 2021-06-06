@@ -41,7 +41,7 @@ public class PosetOfCatGraphBuilder implements IPosetOfCatGraphBuilder {
 		/*
 		graph = GraphTypeBuilder
 				.<String, DefaultEdge> directed().allowingMultipleEdges(false).allowingSelfLoops(false)
-				.edgeClass(DefaultEdge.class).weighted(false).buildGraph();
+				.edgeClass(DefaultEdge.class).weighted(false).buildGraph(); *
 		*/
 		for (ICategory category : relationOverCats.keySet()) {
 			graph.addVertex(getLabel(category));
