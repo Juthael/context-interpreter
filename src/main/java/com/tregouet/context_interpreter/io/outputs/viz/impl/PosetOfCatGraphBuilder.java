@@ -37,12 +37,9 @@ public class PosetOfCatGraphBuilder implements IPosetOfCatGraphBuilder {
 	public boolean buildPosetOfCategoriesGraph(Map<ICategory, Set<ICategory>> relationOverCats) 
 			throws VisualizationException {
 		//build graph
-		graph = new SimpleDirectedGraph<String, DefaultEdge>(DefaultEdge.class);
-		/*
 		graph = GraphTypeBuilder
 				.<String, DefaultEdge> directed().allowingMultipleEdges(false).allowingSelfLoops(false)
-				.edgeClass(DefaultEdge.class).weighted(false).buildGraph(); *
-		*/
+				.edgeClass(DefaultEdge.class).weighted(false).buildGraph();
 		for (ICategory category : relationOverCats.keySet()) {
 			graph.addVertex(getLabel(category));
 		}
@@ -67,7 +64,7 @@ public class PosetOfCatGraphBuilder implements IPosetOfCatGraphBuilder {
 		//display graph
 		try {
 			MutableGraph dotGraph = new Parser().read(stringDOT);
-			Graphviz.fromGraph(dotGraph).width(700).render(Format.PNG).toFile(new File("D:\\ProjetDocs\\essais_viz\\"));
+			Graphviz.fromGraph(dotGraph).width(3000).render(Format.PNG).toFile(new File("D:\\ProjetDocs\\essais_viz\\"));
 		} catch (IOException e) {
 			throw new VisualizationException("PosetOfCatGraphBuilder.buildPosetOfCategoriesGraph("
 					+ "Map<ICategory, Set<ICategory>>) : error." + System.lineSeparator() + e.getMessage());
