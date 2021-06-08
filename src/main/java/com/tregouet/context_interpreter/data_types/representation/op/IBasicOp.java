@@ -4,6 +4,6 @@ import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 
 public interface IBasicOp extends IMonoBinderOp {
 	
-	IConstruct getConstruct();
+	IConstruct getValue();
 
 }

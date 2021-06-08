@@ -4,7 +4,7 @@ public interface IDSOperator {
 	
 	int getContextStateID();
 	
-	float getCost();
+	double getCost();
 	
 	int getID();
 	

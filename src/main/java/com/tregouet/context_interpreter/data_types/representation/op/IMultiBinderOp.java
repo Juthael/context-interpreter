@@ -1,16 +1,19 @@
 package com.tregouet.context_interpreter.data_types.representation.op;
 
-import java.util.List;
+import java.util.Set;
 
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 
-public interface IMultiBinderOp {
+public interface IMultiBinderOp extends IDSOperator {
 	
-	List<AVariable> getBoundVars();
+	Set<AVariable> getBoundVars();
 	
-	List<IConstruct> getConstructs();
+	Set<IConstruct> getValues();
 	
-	List<IMonoBinderOp> getMonoBinderCompnts();
+	Set<IMonoBinderOp> getMonoBinderComponents();
+	
+	@Override
+	double getCost();
 
 }

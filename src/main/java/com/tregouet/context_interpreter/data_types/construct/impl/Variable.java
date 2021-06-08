@@ -22,7 +22,7 @@ public class Variable extends AVariable {
 		return name;
 	}
 	
-	public void incrementAssignmentCount() {
+	public void incAssignmentCount() {
 		assignments++;
 	}
 

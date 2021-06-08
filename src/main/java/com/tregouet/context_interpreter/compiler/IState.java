@@ -7,12 +7,12 @@ import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 
 public interface IState {
 	
-	public static final int START_STATE = 0;
-	public static final int OBJ_STATE = 1;
-	public static final int CAT_STATE = 2;
-	public static final int OMEGA_STATE = 3;
-	public static final int PRE_ACCEPT_STATE = 4;
-	public static final int ACCEPT_STATE = 5;
+	public static final int START_STATE = ICategory.LATT_MIN;
+	public static final int OBJ_STATE = ICategory.LATT_OBJ;
+	public static final int CAT_STATE = ICategory.LATT_CAT;
+	public static final int OMEGA_STATE = ICategory.LATT_MAX;
+	public static final int PRE_ACCEPT_STATE = ICategory.PREACCEPT;
+	public static final int ACCEPT_STATE = ICategory.ACCEPT;
 	
 	boolean acceptInput(ITapes tapes);
 	
@@ -39,5 +39,7 @@ public interface IState {
 	void reset();
 	
 	void setRank(int rank);
+	
+	int type();
 
 }

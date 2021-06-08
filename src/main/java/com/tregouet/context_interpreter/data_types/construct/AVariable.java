@@ -70,7 +70,7 @@ public abstract class AVariable implements ISymbol {
 	 * Must be called every time this variable is assigned a value by an operator.
 	 * @see IDSOperator
 	 */
-	abstract public void incrementAssignmentCount();
+	abstract public void incAssignmentCount();
 	
 	/**
 	 * Assigns a new arbitrary name to the variable.
