@@ -14,7 +14,7 @@ public interface ITree extends IRepresentation {
 	
 	List<ITree> getChildren();
 	
-	Set<IMonoBinderOp> getMonoBinderOp();
+	Set<IMonoBinderOp> getMonoBinderOps();
 	
 	Set<IDSOperator> getOperators();
 	
@@ -23,5 +23,7 @@ public interface ITree extends IRepresentation {
 	void incCounters();
 	
 	void replaceMonoBinderOp(Map<IMonoBinderOp, IDSOperator> replacedToSubstitute);
+	
+	boolean isLeaf();
 
 }
