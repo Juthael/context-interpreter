@@ -31,9 +31,9 @@ public interface IPosetOfCategories {
 		}
 	}
 	
-	boolean buildSuccessorRelationGraph() throws VisualizationException;
+	boolean buildSuccessorRelationGraph(String fileName) throws VisualizationException;
 	
-	boolean buildTransitionRelationGraph() throws VisualizationException;
+	boolean buildTransitionRelationGraph(String fileName) throws VisualizationException;
 	
 	int compare(ICategory cat1, ICategory cat2);
 	

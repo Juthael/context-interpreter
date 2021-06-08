@@ -32,14 +32,19 @@ import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationExcep
 public class PosetOfCategoriesTest {
 
 	private static Path shapes3 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes3.txt");
+	private static Path shapes2 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes2.txt");
 	List<IContextObject> shapes3Obj;
 	IPosetOfCategories catRel3;
+	List<IContextObject> shapes2Obj;
+	IPosetOfCategories catRel2;
 	
 	@SuppressWarnings("unused")
 	@Before
 	public void setUp() throws Exception {
 		shapes3Obj = GenericFileReader.getContextObjects(shapes3);
 		catRel3 = new PosetOfCategories(shapes3Obj);
+		shapes2Obj = GenericFileReader.getContextObjects(shapes2);
+		catRel2 = new PosetOfCategories(shapes2Obj);
 	}
 
 	@Test
@@ -235,9 +240,14 @@ public class PosetOfCategoriesTest {
 	}
 	
 	@Test
-	public void whenGraphBuildingRequestedThenDone() throws VisualizationException {
-		assertTrue(catRel3.buildSuccessorRelationGraph());
+	public void whenSuccRelGraphBuildingRequestedThenDone() throws VisualizationException {
+		assertTrue(catRel2.buildSuccessorRelationGraph("succ2"));
 	}
+	
+	@Test
+	public void whenTransRelGraphBuildingRequestedThenDone() throws VisualizationException {
+		assertTrue(catRel2.buildTransitionRelationGraph("trans2"));
+	}	
 	
 	
 	private void printCategories(IPosetOfCategories catRel) {

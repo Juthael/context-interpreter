@@ -8,7 +8,7 @@ import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationExcep
 
 public interface IPosetOfCatGraphBuilder {
 	
-	boolean buildPosetOfCategoriesGraph(Map<ICategory, Set<ICategory>> relationOverCats) 
+	boolean buildPosetOfCategoriesGraph(Map<ICategory, Set<ICategory>> relationOverCats, String fileName) 
 			throws VisualizationException;
 
 }

@@ -394,10 +394,10 @@ public class PosetOfCategories implements IPosetOfCategories {
 	}
 
 	@Override
-	public boolean buildSuccessorRelationGraph() throws VisualizationException {
+	public boolean buildSuccessorRelationGraph(String fileName) throws VisualizationException {
 		IPosetOfCatGraphBuilder graphBuilder = new PosetOfCatGraphBuilder();
 		try {
-			graphBuilder.buildPosetOfCategoriesGraph(succRelation);
+			graphBuilder.buildPosetOfCategoriesGraph(succRelation, fileName);
 		} catch (VisualizationException e) {
 			throw new VisualizationException("PosetOfCategories.buildSuccessorRelationGraph() : error"
 					+ System.lineSeparator() + e.getMessage());
@@ -406,14 +406,14 @@ public class PosetOfCategories implements IPosetOfCategories {
 	}
 
 	@Override
-	public boolean buildTransitionRelationGraph() throws VisualizationException {
+	public boolean buildTransitionRelationGraph(String fileName) throws VisualizationException {
 		IPosetOfCatGraphBuilder graphBuilder = new PosetOfCatGraphBuilder();
 		try {
-			graphBuilder.buildPosetOfCategoriesGraph(transitionRelation);
+			graphBuilder.buildPosetOfCategoriesGraph(transitionRelation, fileName);
 		} catch (VisualizationException e) {
 			throw new VisualizationException("PosetOfCategories.buildTransitionRelationGraph() : error"
 					+ System.lineSeparator() + e.getMessage());
 		}
-		return false;
+		return true;
 	}
 }

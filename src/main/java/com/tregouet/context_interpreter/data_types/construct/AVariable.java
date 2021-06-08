@@ -87,10 +87,12 @@ public abstract class AVariable implements ISymbol {
 	
 	protected String provideName() {
 		StringBuffer sB = new StringBuffer();
+		sB.append('(');
 		sB.append(getNextChar());
 		for (int i = 0 ; i < iterationsOverAlphabet ; i++) {
 			sB.append("'");
 		}
+		sB.append(')');
 		return sB.toString();
 	}
 

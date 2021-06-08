@@ -11,13 +11,14 @@ import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.SimpleDirectedGraph;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.jgrapht.nio.Attribute;
 import org.jgrapht.nio.DefaultAttribute;
 import org.jgrapht.nio.dot.DOTExporter;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
+import com.tregouet.context_interpreter.data_types.construct.IConstruct;
+import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
 import com.tregouet.context_interpreter.io.outputs.viz.IPosetOfCatGraphBuilder;
 
@@ -34,7 +35,7 @@ public class PosetOfCatGraphBuilder implements IPosetOfCatGraphBuilder {
 	}
 		
 	@Override
-	public boolean buildPosetOfCategoriesGraph(Map<ICategory, Set<ICategory>> relationOverCats) 
+	public boolean buildPosetOfCategoriesGraph(Map<ICategory, Set<ICategory>> relationOverCats, String fileName) 
 			throws VisualizationException {
 		//build graph
 		graph = GraphTypeBuilder
@@ -64,7 +65,8 @@ public class PosetOfCatGraphBuilder implements IPosetOfCatGraphBuilder {
 		//display graph
 		try {
 			MutableGraph dotGraph = new Parser().read(stringDOT);
-			Graphviz.fromGraph(dotGraph).width(3000).render(Format.PNG).toFile(new File("D:\\ProjetDocs\\essais_viz\\"));
+			Graphviz.fromGraph(dotGraph).width(relationOverCats.size()*100)
+				.render(Format.PNG).toFile(new File("D:\\ProjetDocs\\essais_viz\\" + fileName));
 		} catch (IOException e) {
 			throw new VisualizationException("PosetOfCatGraphBuilder.buildPosetOfCategoriesGraph("
 					+ "Map<ICategory, Set<ICategory>>) : error." + System.lineSeparator() + e.getMessage());
@@ -76,20 +78,21 @@ public class PosetOfCatGraphBuilder implements IPosetOfCatGraphBuilder {
 		String label = "";
 		switch (category.type()) {
 			case ICategory.LATT_MIN : 
-				label = "Absurdity";
+				label = "START";
 				break;
 			case ICategory.LATT_OBJ : 
-			case ICategory.LATT_CAT :
-				label = category.getExtent().toString();
-				break;
+				label = "****" + category.getExtent().iterator().next().getID() + "****" 
+						+ System.lineSeparator();
+			case ICategory.PREACCEPT :
 			case ICategory.LATT_MAX : 
-				label = "Truism";
-				break;
-			case ICategory.PREACCEPT : 
-				label = "PreAccept";
+			case ICategory.LATT_CAT :
+				StringBuilder sB = new StringBuilder(label);
+				for (IConstruct construct : category.getIntent())
+					sB.append(construct.toString() + System.lineSeparator());
+				label = sB.toString();
 				break;
 			case ICategory.ACCEPT : 
-				label = "Accept";
+				label = "ACCEPT";
 				break;
 		}
 		return label;
