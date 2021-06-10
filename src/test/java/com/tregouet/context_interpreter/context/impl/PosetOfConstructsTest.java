@@ -39,7 +39,7 @@ public class PosetOfConstructsTest {
 	public void whenCategoryOfSpecifiedConstructRequestedThenExpectedReturned() {
 		boolean expectedReturned = true;
 		Set<ICategory> allNonMinimumCategories = catRel3.getCategories();
-		allNonMinimumCategories.remove(catRel3.getCatLatticeMin());
+		allNonMinimumCategories.remove(catRel3.getLatticeMin());
 		for (ICategory currCat : catRel3.getCategories()) {
 			for (IConstruct currConst : currCat.getIntent()) {
 				ICategory returned = constRel3.getCategoryOf(currConst);
@@ -217,9 +217,9 @@ public class PosetOfConstructsTest {
 		Map<ICategory, Set<ICategory>> succRelationOverCats = catRel3.getSuccRelOverCategories();
 		Map<ICategory, Set<ICategory>> succRelationWithNoMin = new HashMap<ICategory, Set<ICategory>>();
 		for (ICategory curr : succRelationOverCats.keySet()) {
-			if (!curr.equals(catRel3.getCatLatticeMin())) {
+			if (!curr.equals(catRel3.getLatticeMin())) {
 				Set<ICategory> relatedExceptMin = new HashSet<ICategory>(succRelationOverCats.get(curr));
-				relatedExceptMin.remove(catRel3.getCatLatticeMin());
+				relatedExceptMin.remove(catRel3.getLatticeMin());
 				succRelationWithNoMin.put(curr, relatedExceptMin);
 			}
 		}

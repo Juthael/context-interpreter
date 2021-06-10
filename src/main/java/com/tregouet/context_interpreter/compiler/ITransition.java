@@ -14,10 +14,6 @@ public interface ITransition {
 	
 	IState getReadingState();
 	
-	void incrementCounters();
-	
 	void localizeAsStateRule();
-	
-	void setCosts();
 
 }

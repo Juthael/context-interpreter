@@ -12,7 +12,7 @@ import com.tregouet.context_interpreter.context.IPosetOfCategories;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 
-public class PosetOfConstructs implements IPosetOfConstructs {
+public abstract class PosetOfConstructs implements IPosetOfConstructs {
 
 	private final IPosetOfCategories catPoset;
 	private final Map<IConstruct, ICategory> constructToCat;
@@ -38,7 +38,8 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 	@Override
 	public int compare(IConstruct construct1, IConstruct construct2) {
 		int catComparison = catPoset.compare(constructToCat.get(construct1), constructToCat.get(construct2));
-		if (catComparison == IPosetOfCategories.SUPER_CATEGORY && IPosetOfConstructs.generates(construct1, construct2))
+		if (catComparison == IPosetOfCategories.SUPER_CATEGORY 
+				&& IPosetOfConstructs.generates(construct1, construct2))
 			return IPosetOfConstructs.ABSTRACTION_OF;
 		else if (catComparison == IPosetOfCategories.SUB_CATEGORY && IPosetOfConstructs.generates(construct2, construct1))
 			return IPosetOfConstructs.INSTANCE_OF;
@@ -51,22 +52,6 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 	@Override
 	public ICategory getCategoryOf(IConstruct construct) {
 		return constructToCat.get(construct);
-	}
-
-	@Override
-	public Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories() {
-		Map<ICategory, Set<ICategory>> transitionRelation = new HashMap<ICategory, Set<ICategory>>();
-		for (ICategory cat : catPoset.getAllCategoriesExceptLatticeMinimum()) {
-			transitionRelation.put(cat, new HashSet<ICategory>());
-		}
-		for (IConstruct construct : relation.keySet()) {
-			ICategory predecessorCat = constructToCat.get(construct);
-			for (IConstruct succ : succRelation.get(construct)) {
-				ICategory successorCat = constructToCat.get(succ);
-				transitionRelation.get(predecessorCat).add(successorCat);
-			}
-		}
-		return transitionRelation;
 	}
 
 	@Override
@@ -98,7 +83,7 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 	public Map<IConstruct, Set<IConstruct>> getRelation() {
 		return relation;
 	}
-	
+
 	@Override
 	public Set<List<IConstruct>> getSpanningChains() {
 		return getChainsFrom(maximum);
@@ -108,10 +93,26 @@ public class PosetOfConstructs implements IPosetOfConstructs {
 	public Set<IConstruct> getSuccessors(IConstruct construct) {
 		return succRelation.get(construct);
 	}
-
+	
 	@Override
 	public Map<IConstruct, Set<IConstruct>> getSuccRelation() {
 		return succRelation;
+	}
+
+	@Override
+	public Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories() {
+		Map<ICategory, Set<ICategory>> transitionRelation = new HashMap<ICategory, Set<ICategory>>();
+		for (ICategory cat : catPoset.getAllCategoriesExceptLatticeMinimum()) {
+			transitionRelation.put(cat, new HashSet<ICategory>());
+		}
+		for (IConstruct construct : relation.keySet()) {
+			ICategory predecessorCat = constructToCat.get(construct);
+			for (IConstruct succ : succRelation.get(construct)) {
+				ICategory successorCat = constructToCat.get(succ);
+				transitionRelation.get(predecessorCat).add(successorCat);
+			}
+		}
+		return transitionRelation;
 	}
 
 	@Override

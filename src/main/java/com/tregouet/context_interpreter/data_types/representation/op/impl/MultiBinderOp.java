@@ -20,22 +20,32 @@ public class MultiBinderOp extends DSOperator implements IMultiBinderOp {
 	}
 
 	@Override
-	public int getNbOfBoundVar() {
-		return monoBinders.size();
-	}
-
-	@Override
-	public void incCounters() {
-		for (IMonoBinderOp monoBinder : monoBinders)
-			monoBinder.incCounters();
-	}
-
-	@Override
 	public Set<AVariable> getBoundVars() {
 		Set<AVariable> boundVars = new HashSet<AVariable>();
 		for (IMonoBinderOp monoBinder : monoBinders)
 			boundVars.add(monoBinder.getBoundVar());
 		return boundVars;
+	}
+
+	@Override
+	public double getCost() {
+		int assignmentCount = 0;
+		int applicationCount = 0;
+		for (IMonoBinderOp monobinder : monoBinders) {
+			assignmentCount += monobinder.getBoundVar().getAssignmentCount();
+			applicationCount += monobinder.getNbOfApplications();
+		}
+		return calculateCost(applicationCount, assignmentCount);
+	}
+
+	@Override
+	public Set<IMonoBinderOp> getMonoBinderComponents() {
+		return monoBinders;
+	}
+
+	@Override
+	public int getNbOfBoundVar() {
+		return monoBinders.size();
 	}
 
 	@Override
@@ -50,19 +60,9 @@ public class MultiBinderOp extends DSOperator implements IMultiBinderOp {
 	}
 
 	@Override
-	public Set<IMonoBinderOp> getMonoBinderComponents() {
-		return monoBinders;
-	}
-
-	@Override
-	public double getCost() {
-		int assignmentCount = 0;
-		int applicationCount = 0;
-		for (IMonoBinderOp monobinder : monoBinders) {
-			assignmentCount += monobinder.getBoundVar().getAssignmentCount();
-			applicationCount += monobinder.getNbOfApplications();
-		}
-		return calculateCost(applicationCount, assignmentCount);
+	public void incCounters() {
+		for (IMonoBinderOp monoBinder : monoBinders)
+			monoBinder.incCounters();
 	}
 
 }

@@ -55,6 +55,14 @@ public class CompilerBuilder implements ICompilerBuilder {
 		return null;
 	}
 	
+	private TreeSet<IDeterministicTF> buildDeterministicTFs(){
+		return null;
+	}
+	
+	private INonDeterministicTF buildNonDeterministicTF() {
+		return null;
+	}
+	
 	private Map<IState, Set<IState>> buildRelationOverStates() {
 		Map<IState, Set<IState>> relOverStates = new HashMap<IState, Set<IState>>();
 		//build START state
@@ -95,15 +103,7 @@ public class CompilerBuilder implements ICompilerBuilder {
 		return relOverStates;
 	}
 	
-	private INonDeterministicTF buildNonDeterministicTF() {
-		return null;
-	}
-	
 	private Set<IStateDeterministicTF> buildStateDeterministicTFs() {
-		return null;
-	}
-	
-	private TreeSet<IDeterministicTF> buildDeterministicTFs(){
 		return null;
 	}
 

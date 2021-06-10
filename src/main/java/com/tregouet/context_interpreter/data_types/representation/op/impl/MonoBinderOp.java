@@ -18,19 +18,19 @@ public abstract class MonoBinderOp extends DSOperator implements IMonoBinderOp {
 	}
 
 	@Override
+	public double getCost() {
+		return calculateCost(applicationsCount, boundVar.getAssignmentCount());
+	}
+
+	@Override
 	public int getNbOfBoundVar() {
 		return 1;
 	}
-
+	
 	@Override
 	public void incCounters() {
 		boundVar.incAssignmentCount();
 		applicationsCount++;
-	}
-	
-	@Override
-	public double getCost() {
-		return calculateCost(applicationsCount, boundVar.getAssignmentCount());
 	}
 
 }

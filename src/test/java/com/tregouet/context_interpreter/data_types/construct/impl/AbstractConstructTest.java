@@ -35,7 +35,7 @@ public class AbstractConstructTest {
 		boolean equals = false;
 		Set<Integer> hashCodes = new HashSet<Integer>();
 		Set<ICategory> cats = new HashSet<ICategory>(catRel3.getCategories());
-		cats.remove(catRel3.getCatLatticeMin());
+		cats.remove(catRel3.getLatticeMin());
 		for (ICategory cat : cats) {
 			for (IConstruct construct : cat.getIntent()) {
 				if (!hashCodes.add(construct.hashCode()))
@@ -50,7 +50,7 @@ public class AbstractConstructTest {
 		boolean equals = false;
 		Set<IConstruct> constructs = new HashSet<IConstruct>();
 		Set<ICategory> cats = new HashSet<ICategory>(catRel3.getCategories());
-		cats.remove(catRel3.getCatLatticeMin());
+		cats.remove(catRel3.getLatticeMin());
 		for (ICategory cat : cats) {
 			for (IConstruct construct : cat.getIntent()) {
 				if (!constructs.add(construct)) {

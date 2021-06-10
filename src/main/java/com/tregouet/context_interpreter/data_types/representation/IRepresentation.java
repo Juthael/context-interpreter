@@ -10,11 +10,11 @@ import com.tregouet.context_interpreter.data_types.representation.op.IDSOperator
 
 public interface IRepresentation extends Comparable<IRepresentation> {
 	
+	Map<AVariable, Set<IConstruct>> asDomainSpecificGrammar();
+	
 	LinkedHashMap<IConstruct, IDSOperator> asGenusDifferentiaDesc();
 	
 	String asLambdaExpression();
-	
-	Map<AVariable, Set<IConstruct>> asDomainSpecificGrammar();
 	
 	float getCost();
 

@@ -46,8 +46,6 @@ public interface IPosetOfConstructs {
 	
 	ICategory getCategoryOf(IConstruct construct);
 	
-	Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories();
-	
 	Set<IConstruct> getLowerBounds(IConstruct construct);
 	
 	IConstruct getMaximum();
@@ -65,6 +63,8 @@ public interface IPosetOfConstructs {
 	Set<IConstruct> getSuccessors(IConstruct construct);
 	
 	Map<IConstruct, Set<IConstruct>> getSuccRelation();
+	
+	Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories();
 	
 	Set<IConstruct> getUpperBounds(IConstruct construct);
 

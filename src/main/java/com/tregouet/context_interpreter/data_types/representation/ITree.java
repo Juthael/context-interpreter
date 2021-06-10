@@ -22,8 +22,8 @@ public interface ITree extends IRepresentation {
 	
 	void incCounters();
 	
-	void replaceMonoBinderOp(Map<IMonoBinderOp, IDSOperator> replacedToSubstitute);
-	
 	boolean isLeaf();
+	
+	void replaceMonoBinderOp(Map<IMonoBinderOp, IDSOperator> replacedToSubstitute);
 
 }

@@ -40,13 +40,13 @@ public class Construct extends AbstractConstruct implements IConstruct {
 	}
 
 	@Override
-	public void singularize() {
-		iD = LAST_ID++;
+	public boolean isAbstract() {
+		return false;
 	}
 	
 	@Override
-	public boolean isAbstract() {
-		return false;
+	public void singularize() {
+		iD = LAST_ID++;
 	}
 
 }

@@ -38,19 +38,7 @@ public class Transition implements ITransition {
 	}
 
 	@Override
-	public void incrementCounters() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void localizeAsStateRule() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void setCosts() {
 		// TODO Auto-generated method stub
 
 	}

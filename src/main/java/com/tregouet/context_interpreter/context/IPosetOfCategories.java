@@ -8,6 +8,8 @@ import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
+import com.tregouet.context_interpreter.io.outputs.viz.IPosetOfCatGraphBuilder;
+import com.tregouet.context_interpreter.io.outputs.viz.impl.PosetOfCatGraphBuilder;
 
 public interface IPosetOfCategories {
 	
@@ -31,29 +33,27 @@ public interface IPosetOfCategories {
 		}
 	}
 	
-	boolean buildSuccessorRelationGraph(String fileName) throws VisualizationException;
+	public static boolean buildSpecifiedPosetGraph(String fileName, Map<ICategory, Set<ICategory>> posetOfCats) 
+			throws VisualizationException {
+		IPosetOfCatGraphBuilder graphBuilder = new PosetOfCatGraphBuilder();
+		try {
+			graphBuilder.buildPosetOfCategoriesGraph(posetOfCats, fileName);
+		} catch (VisualizationException e) {
+			throw new VisualizationException("PosetOfCategories.buildSuccessorRelationGraph() : error"
+					+ System.lineSeparator() + e.getMessage());
+		}
+		return true;
+	}	
 	
-	boolean buildTransitionRelationGraph(String fileName) throws VisualizationException;
+	boolean buildSuccessorRelationGraph(String fileName) throws VisualizationException;
 	
 	int compare(ICategory cat1, ICategory cat2);
 	
 	ICategory getAcceptCategory();
 	
-	Set<ICategory> getAllCategoriesExceptLatticeMinimum();
-	
 	Set<ICategory> getCategories();
 	
-	Map<ICategory, Set<ICategory>> getCategoryLatticeSuccRel();
-	
-	ICategory getCatLatticeMax();
-	
-	ICategory getCatLatticeMin();
-	
-	Map<IConstruct, ICategory> getConstructToCategoryMap();
-	
-	Set<ICategory> getLattice();
-	
-	Set<ICategory> getLatticeAbstCategories();
+	Map<IConstruct, ICategory> getConstructToCategoryMap();	
 	
 	Set<ICategory> getLowerBounds(ICategory category);
 	
@@ -74,8 +74,6 @@ public interface IPosetOfCategories {
 	Set<ICategory> getSuccessors(ICategory category);
 	
 	Map<ICategory, Set<ICategory>> getSuccRelOverCategories();
-	
-	Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories();
 	
 	Set<ICategory> getUpperBounds(ICategory category);
 

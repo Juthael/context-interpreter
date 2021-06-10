@@ -9,11 +9,11 @@ public interface IMultiBinderOp extends IDSOperator {
 	
 	Set<AVariable> getBoundVars();
 	
-	Set<IConstruct> getValues();
+	@Override
+	double getCost();
 	
 	Set<IMonoBinderOp> getMonoBinderComponents();
 	
-	@Override
-	double getCost();
+	Set<IConstruct> getValues();
 
 }

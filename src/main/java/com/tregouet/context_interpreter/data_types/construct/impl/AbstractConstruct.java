@@ -98,6 +98,14 @@ public class AbstractConstruct implements IConstruct {
 		return false;
 	}
 
+	@Override
+	public void singularize() {
+		for (ISymbol symbol : prog) {
+			if (symbol instanceof AVariable)
+				((AVariable) symbol).setName();
+		}
+	}
+	
 	public List<String> toListOfStringsWithPlaceholders(){
 		List<String> list = new ArrayList<String>();
 		for (ISymbol sym : prog) {
@@ -117,14 +125,6 @@ public class AbstractConstruct implements IConstruct {
 				sB.append(" ");
 		}
 		return sB.toString();
-	}
-	
-	@Override
-	public void singularize() {
-		for (ISymbol symbol : prog) {
-			if (symbol instanceof AVariable)
-				((AVariable) symbol).setName();
-		}
 	}
 
 }

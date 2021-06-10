@@ -15,8 +15,8 @@ public interface IConstruct {
 	
 	boolean meets(IConstruct constraint);
 	
-	List<String> toListOfStringsWithPlaceholders();
-	
 	void singularize();
+	
+	List<String> toListOfStringsWithPlaceholders();
 
 }

@@ -81,7 +81,7 @@ public class PosetOfCategoriesTest {
 		boolean sameExtent;
 		ICategory accept = catRel3.getAcceptCategory();
 		ICategory preAccept = catRel3.getPreAcceptCategory();
-		ICategory latticeMax = catRel3.getCatLatticeMax();
+		ICategory latticeMax = catRel3.getLatticeMax();
 		sameExtent = (accept.getExtent().equals(preAccept.getExtent()) 
 				&& accept.getExtent().equals(latticeMax.getExtent()));
 		assertTrue(sameExtent);
@@ -196,9 +196,9 @@ public class PosetOfCategoriesTest {
 		//set restriction
 		Map<ICategory, Set<ICategory>> restrictedSuccRelation = new HashMap<ICategory, Set<ICategory>>();
 		for (Entry<ICategory, Set<ICategory>> succEntry : succRelation.entrySet()) {
-			if (!succEntry.getKey().equals(catRel3.getCatLatticeMin())) {
+			if (!succEntry.getKey().equals(catRel3.getLatticeMin())) {
 				Set<ICategory> relatedMinusMin = new HashSet<ICategory>(succEntry.getValue());
-				relatedMinusMin.remove(catRel3.getCatLatticeMin());
+				relatedMinusMin.remove(catRel3.getLatticeMin());
 				restrictedSuccRelation.put(succEntry.getKey(), relatedMinusMin);
 			}
 		}
