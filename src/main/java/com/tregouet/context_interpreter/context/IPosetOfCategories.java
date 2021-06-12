@@ -55,7 +55,7 @@ public interface IPosetOfCategories {
 	
 	Map<IConstruct, ICategory> getConstructToCategoryMap();	
 	
-	Set<ICategory> getLowerBounds(ICategory category);
+	Set<ICategory> getLowerSet(ICategory category);
 	
 	Set<ICategory> getObjectCategories();
 	
@@ -75,6 +75,10 @@ public interface IPosetOfCategories {
 	
 	Map<ICategory, Set<ICategory>> getSuccRelOverCategories();
 	
-	Set<ICategory> getUpperBounds(ICategory category);
+	Set<ICategory> getUpperSet(ICategory category);
+	
+	Set<ICategory> getUpperSet(Set<ICategory> categories);
+	
+	Set<ICategory> getLowerSet(Set<ICategory> categories);
 
 }

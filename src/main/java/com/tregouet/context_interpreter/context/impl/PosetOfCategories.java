@@ -78,8 +78,8 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 	}
 	
 	@Override
-	public Set<ICategory> getLowerBounds(ICategory category) {
-		return relation.get(category);
+	public Set<ICategory> getLowerSet(ICategory category) {
+		return new HashSet<ICategory>(relation.get(category));
 	}
 	
 	@Override
@@ -109,7 +109,7 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 
 	@Override
 	public Set<ICategory> getPredecessors(ICategory category) {
-		return precRelation.get(category);
+		return new HashSet<>(precRelation.get(category));
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 
 	@Override
 	public Set<ICategory> getSuccessors(ICategory category) {
-		return succRelation.get(category);
+		return new HashSet<ICategory>(succRelation.get(category));
 	}
 	
 	@Override
@@ -133,7 +133,7 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 	}
 
 	@Override
-	public Set<ICategory> getUpperBounds(ICategory category) {
+	public Set<ICategory> getUpperSet(ICategory category) {
 		Set<ICategory> upperBounds = new HashSet<ICategory>();
 		for (ICategory cat : relation.keySet()) {
 			if (relation.get(cat).contains(category))
@@ -194,5 +194,32 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 			for (ICategory succCat : succRelation.get(cat))
 				precRelation.get(succCat).add(cat);
 		}
-	}	
+	}
+	
+	@Override
+	public Set<ICategory> getUpperSet(Set<ICategory> categories) {
+		Set<ICategory> upperBounds = new HashSet<ICategory>();
+		ICategory[] catArray = categories.toArray(new ICategory[categories.size()]);
+		for (int i = 0 ; i < categories.size() ; i++) {
+			if (i == 0)
+				upperBounds.addAll(getUpperSet(catArray[i]));
+			else {
+				upperBounds.removeAll(getUpperSet(catArray[i]));
+			}
+		}
+		return upperBounds;
+	}
+	
+	@Override
+	public Set<ICategory> getLowerSet(Set<ICategory> categories) {
+		Set<ICategory> lowerBounds = new HashSet<ICategory>();
+		ICategory[] catArray = categories.toArray(new ICategory[categories.size()]);
+		for (int i = 0 ; i < categories.size() ; i++) {
+			if (i == 0)
+				lowerBounds.addAll(getLowerSet(catArray[i]));
+			else lowerBounds.removeAll(getLowerSet(catArray[i]));
+		}
+		return lowerBounds;
+	}
+	
 }

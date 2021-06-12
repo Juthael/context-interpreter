@@ -1,12 +1,14 @@
 package com.tregouet.context_interpreter.context.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.compiler.impl.Category;
@@ -117,58 +119,58 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 		return null;
 	}
 	
-	//recursive
-	private Set<Set<ICategory>> getTreeSetsFrom(ICategory root, List<IContextObject> reachableObjs) {
-		Set<Set<ICategory>> treeSets = new HashSet<Set<ICategory>>();
-		if (root.type() == ICategory.LATT_OBJ) {
-			Set<ICategory> leaf = new HashSet<ICategory>();
-			leaf.add(root);
-			treeSets.add(leaf);
-		}
-		else {
-			//map reachable objects to category successors
-			Map<IContextObject, List<ICategory>> reachableToSucc = new HashMap<IContextObject, List<ICategory>>();
-			List<ICategory> successors = new ArrayList<ICategory>(getSuccessors(root));
-			for (ICategory successor : successors) {
-				for (IContextObject instance : successor.getExtent()) {
-					if (reachableObjs.contains(instance)) {
-						if (!reachableToSucc.containsKey(instance))
-							reachableToSucc.put(instance, new ArrayList<ICategory>());
-						reachableToSucc.get(instance).add(successor);
-					}
-				}
-			}
-			//build alternative mappings of successors to reachable objects
-			Set<Map<ICategory, Set<IContextObject>>> succToReachableMaps = 
-					new HashSet<Map<ICategory, Set<IContextObject>>>();
-			int[] nbOfReachingSucc = new int[reachableObjs.size()];
-			int[] succIdxs = new int[reachableObjs.size()];
-				//set coord arrays
-			succIdxs[0] = -1;
-			for (int i = 0 ; i < reachableObjs.size() ; i++)
-				nbOfReachingSucc[i] = reachableToSucc.get(reachableObjs.get(i)).size();
-				//set mappings of successors to reachable objects
-			while (nextCoord(succIdxs, nbOfReachingSucc)) {
-				Map<ICategory, Set<IContextObject>> succToReachables = new HashMap<ICategory, Set<IContextObject>>();
-				for (int j = 0 ; j < reachableObjs.size() ; j++) {
-					ICategory successor = reachableToSucc.get(reachableObjs.get(j)).get(succIdxs[j]);
-					if (!succToReachables.containsKey(successor))
-						succToReachables.put(successor, new HashSet<IContextObject>());
-					succToReachables.get(successor).add(reachableObjs.get(j));
-				}
-				succToReachableMaps.add(succToReachables);
-			}
-			//for each map, build a treeSet and populate treeSets
-			for (Map<ICategory, Set<IContextObject>> succToReachables : succToReachableMaps) {
-				Set<ICategory> treeSet = new HashSet<ICategory>();
-				treeSet.add(root);
-				for (ICategory successor : succToReachables.keySet())
-					//HERE, tout refaire
-			}
-		}
-
+	private Set<Set<ICategory>> getTreeSubSetsFrom(ICategory category) {
+		return null;
+	}
+	
+	private Set<ICategory> getNonOverlappingSubset() {
 		
 	}
+	
+	private Set<ICategory> getObjReachingSubset(Set<ICategory> subset) {	
+		Set<ICategory> lowerBoundObjCats = getLowerSet(subset).stream()
+					.filter(i -> i.type() == ICategory.LATT_OBJ)
+					.collect(Collectors.toSet());
+		if (!lowerBoundObjCats.isEmpty()) {
+			subset.retainAll(getUpperSet(lowerBoundObjCats));
+		}
+		return subset;
+	}
+	
+	private static Set<List<ICategory>> getPermutations(Set<ICategory> categories) {
+		Set<List<ICategory>> permutations;
+		ICategory[] cats = categories.toArray(new ICategory[categories.size()]);
+		permutations = permute(cats, cats.length);
+		return permutations;
+	}
+	
+	// Heap's algorithm
+	private static Set<List<ICategory>> permute(ICategory[] cats, int n) {
+		Set<List<ICategory>> permutations = new HashSet<List<ICategory>>();
+		if (n == 1) {
+			permutations.add(new ArrayList<ICategory>(Arrays.asList(cats)));
+		}
+		else {
+			for (int i = 0 ; i < n ; i++) {
+				permutations.addAll(permute(cats, n - 1));
+				if (n % 2 == 1) {
+					swap(cats, 0, n - 1);
+				}
+				else {
+					swap(cats, i, n - 1);
+				}
+			}
+		}
+		return permutations;
+	}
+	
+	private static void swap(ICategory[] cats, int i, int j) {
+		ICategory swapped = cats[i];
+		cats[i] = cats[j];
+		cats[j] = swapped;
+	}
+	
+	
 	
 	private void addAcceptAndPreAcceptCatToRelation() {
 		Set<ICategory> preAcceptSubCat = new HashSet<ICategory>(lattice);
@@ -334,6 +336,6 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 			else coords[i] = 0;
 	    }
 	    return false;
-    }	
+    }
 
 }
