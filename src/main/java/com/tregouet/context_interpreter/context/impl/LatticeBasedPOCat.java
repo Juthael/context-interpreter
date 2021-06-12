@@ -125,6 +125,7 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 	
 	private Set<ICategory> getNonOverlappingSubset() {
 		//HERE
+		//
 	}
 	
 	private Set<ICategory> getObjReachingSubset(Set<ICategory> subset) {	
