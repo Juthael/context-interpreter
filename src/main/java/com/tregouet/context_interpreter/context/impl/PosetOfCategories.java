@@ -204,7 +204,7 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 			if (i == 0)
 				upperBounds.addAll(getUpperSet(catArray[i]));
 			else {
-				upperBounds.removeAll(getUpperSet(catArray[i]));
+				upperBounds.retainAll(getUpperSet(catArray[i]));
 			}
 		}
 		return upperBounds;
@@ -217,7 +217,7 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 		for (int i = 0 ; i < categories.size() ; i++) {
 			if (i == 0)
 				lowerBounds.addAll(getLowerSet(catArray[i]));
-			else lowerBounds.removeAll(getLowerSet(catArray[i]));
+			else lowerBounds.retainAll(getLowerSet(catArray[i]));
 		}
 		return lowerBounds;
 	}

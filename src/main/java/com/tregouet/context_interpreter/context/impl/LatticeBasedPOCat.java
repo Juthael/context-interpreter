@@ -119,57 +119,56 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 		return null;
 	}
 	
-	private Set<Set<ICategory>> getTreeSubSetsFrom(ICategory category) {
-		return null;
-	}
-	
-	private Set<ICategory> getNonOverlappingSubset() {
-		//HERE
-		//
-	}
-	
-	private Set<ICategory> getObjReachingSubset(Set<ICategory> subset) {	
-		Set<ICategory> lowerBoundObjCats = getLowerSet(subset).stream()
-					.filter(i -> i.type() == ICategory.LATT_OBJ)
-					.collect(Collectors.toSet());
-		if (!lowerBoundObjCats.isEmpty()) {
-			subset.retainAll(getUpperSet(lowerBoundObjCats));
-		}
-		return subset;
-	}
-	
-	private static Set<List<ICategory>> getPermutations(Set<ICategory> categories) {
-		Set<List<ICategory>> permutations;
-		ICategory[] cats = categories.toArray(new ICategory[categories.size()]);
-		permutations = permute(cats, cats.length);
-		return permutations;
-	}
-	
-	// Heap's algorithm
-	private static Set<List<ICategory>> permute(ICategory[] cats, int n) {
-		Set<List<ICategory>> permutations = new HashSet<List<ICategory>>();
-		if (n == 1) {
-			permutations.add(new ArrayList<ICategory>(Arrays.asList(cats)));
+	private Set<Map<ICategory, Set<ICategory>>> getSubTreesFrom(ICategory category, Set<ICategory> explorableLowerSet) {
+		//set of alternative tree relations from this category
+		Set<Map<ICategory, Set<ICategory>>> subTrees = new HashSet<Map<ICategory, Set<ICategory>>>();
+		if (category.type() == ICategory.LATT_OBJ) {
+			Map<ICategory, Set<ICategory>> leafMap = new HashMap<>();
+			leafMap.put(category, new HashSet<ICategory>());
+			subTrees.add(leafMap);
 		}
 		else {
-			for (int i = 0 ; i < n ; i++) {
-				permutations.addAll(permute(cats, n - 1));
-				if (n % 2 == 1) {
-					swap(cats, 0, n - 1);
+			Set<ICategory> attainableSuccessors = getSuccessorsInSpecifiedSubset(category, explorableLowerSet);
+			/*
+			 * the set of attainable successors is the intersection of the set of the specified category's 
+			 * successors in the relation over categories, with the specified explorable subset.
+			 */
+			Set<List<ICategory>> permutationsOfSuccessors = getPermutations(attainableSuccessors);
+			/*
+			 * The explorable lower set of a given successor may vary according to its index in the list of 
+			 * successors (because of non-overlapping with previous successor's lower sets)
+			 */
+			for (List<ICategory> listOfSuccessors : permutationsOfSuccessors) {
+				Map<ICategory, Set<ICategory>> subTreeForCurrPerm = new HashMap<ICategory, Set<ICategory>>();
+				//each permutation yields one tree relation NON
+				List<Set<ICategory>> explorableLowerSets = getExplorableLowerSets(listOfSuccessors);
+				//ith set is the explorable lower set for the ith successor in the current list of successors
+				for (int i = 0 ; i < listOfSuccessors.size() ; i++) {
+					ICategory successor = listOfSuccessors.get(i);
+					Set<ICategory> succExplorableLowerSet = explorableLowerSets.get(i);
+					//a successor with an empty explorable lower set is either an object, or a dead-end
+					if (!succExplorableLowerSet.isEmpty() || successor.type() == ICategory.LATT_OBJ) {
+						//recursion
+						for (Map<ICategory, Set<ICategory>> subTreeFromCurrSucc : 
+								getSubTreesFrom(successor, succExplorableLowerSet))
+							subTreeForCurrPerm.putAll(subTreeFromCurrSucc);
+					}
 				}
-				else {
-					swap(cats, i, n - 1);
-				}
-			}
+				//make specified cat the root of the sub-tree for current permutation of successors
+				Set<ICategory> relatedToSpecCat = subTreeForCurrPerm.keySet();
+				subTreeForCurrPerm.put(category, relatedToSpecCat);
+				subTrees.add(subTreeForCurrPerm);
+			}	
 		}
-		return permutations;
+		return subTrees;
 	}
 	
-	private static void swap(ICategory[] cats, int i, int j) {
-		ICategory swapped = cats[i];
-		cats[i] = cats[j];
-		cats[j] = swapped;
+	private Set<ICategory> getSuccessorsInSpecifiedSubset(ICategory cat, Set<ICategory> subset){
+		Set<ICategory> successorsInSubSet = getSuccessors(cat);
+		successorsInSubSet.retainAll(subset);
+		return successorsInSubSet;
 	}
+	
 	
 	
 	
@@ -329,14 +328,5 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 	private void updateCategoryRanks() {
 		updateCategoryRanks(latticeMin, 0);
 	}
-	
-	private static boolean nextCoord(int[] coords, int[] dimensions){
-		for(int i = 0 ; i < coords.length ; ++i) {
-			if (++coords[i] < dimensions[i])
-				return true;
-			else coords[i] = 0;
-	    }
-	    return false;
-    }
 
 }
