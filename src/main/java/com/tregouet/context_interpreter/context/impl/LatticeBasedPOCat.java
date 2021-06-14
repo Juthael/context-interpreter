@@ -43,22 +43,19 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 		instantiateAcceptCategory();
 		instantiatePreAcceptCategory();
 		addAcceptAndPreAcceptCatToRelation();
-		buildSuccessorRelation();
-		buildPredecessorRelation();
 		updateCategoryRanks();
 	}
 	
 	@Override
 	public Set<ICategory> getAllCategoriesExceptLatticeMinimum() {
-		Set<ICategory> allButMin = new HashSet<>(relation.keySet());
+		Set<ICategory> allButMin = relation.getSet();
 		allButMin.remove(latticeMin);
 		return allButMin;
 	}
 	
 	@Override
 	public Map<ICategory, Set<ICategory>> getLatticeSuccRel() {
-		Map<ICategory, Set<ICategory>> latticeSuccRel = 
-				new HashMap<ICategory, Set<ICategory>>(succRelation);
+		Map<ICategory, Set<ICategory>> latticeSuccRel =	relation.getSuccRelationMap();
 		latticeSuccRel.remove(accept);
 		latticeSuccRel.remove(preAccept);
 		return latticeSuccRel;
@@ -77,7 +74,7 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 	@Override
 	public Map<IConstruct, ICategory> getConstructToCategoryMap() {
 		//all categories but lattice minimum
-		Set<ICategory> allCategoriesExceptMinimum = new HashSet<ICategory>(relation.keySet());
+		Set<ICategory> allCategoriesExceptMinimum = relation.getSet();
 		allCategoriesExceptMinimum.remove(latticeMin);
 		Map<IConstruct, ICategory> constructToCategory = new HashMap<IConstruct, ICategory>();
 		for (ICategory category : allCategoriesExceptMinimum) {
@@ -169,19 +166,14 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 		return successorsInSubSet;
 	}
 	
-	
-	
-	
 	private void addAcceptAndPreAcceptCatToRelation() {
-		Set<ICategory> preAcceptSubCat = new HashSet<ICategory>(lattice);
-		Set<ICategory> acceptSubCat = new HashSet<ICategory>(lattice);
-		acceptSubCat.add(preAccept);
-		relation.put(preAccept, preAcceptSubCat);
-		relation.put(accept, acceptSubCat);
+		relation.addAsMaximum(preAccept);
+		relation.addAsMaximum(accept);
 	}
 	
 	private void buildCategoryLatticeStrictPartialOrderRelation() {
 		Map<Set<IConstruct>, Set<IContextObject>> intentsToExtents = buildIntentToExtentRel();
+		Map<ICategory, Set<ICategory>> relationMap = new HashMap<ICategory, Set<ICategory>>();
 		for (Entry<Set<IConstruct>, Set<IContextObject>> entry : intentsToExtents.entrySet()) {
 			ICategory category = new Category(entry.getKey(), entry.getValue());
 			if (category.getExtent().size() == 1) {
@@ -201,17 +193,18 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 				latticeAbstCat.add(category);
 			}
 			lattice.add(category);
-			relation.put(category, new HashSet<ICategory>());
+			relationMap.put(category, new HashSet<ICategory>());
 		}
 		List<ICategory> catList = new ArrayList<ICategory>(lattice);
 		for (int i = 0 ; i < catList.size() - 1 ; i++) {
 			for (int j = i+1 ; j < catList.size() ; j++) {
 				if (catList.get(i).getExtent().containsAll(catList.get(j).getExtent()))
-					relation.get(catList.get(i)).add(catList.get(j));
+					relationMap.get(catList.get(i)).add(catList.get(j));
 				else if (catList.get(j).getExtent().containsAll(catList.get(i).getExtent()))
-					relation.get(catList.get(j)).add(catList.get(i));
+					relationMap.get(catList.get(j)).add(catList.get(i));
 			}
 		}
+		relation = new Relation<ICategory>(relationMap);
 	}
 	
 	private Map<Set<IConstruct>, Set<IContextObject>> buildIntentToExtentRel() {

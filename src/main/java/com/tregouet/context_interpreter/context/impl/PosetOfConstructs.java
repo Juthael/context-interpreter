@@ -38,10 +38,10 @@ public abstract class PosetOfConstructs implements IPosetOfConstructs {
 	@Override
 	public int compare(IConstruct construct1, IConstruct construct2) {
 		int catComparison = catPoset.compare(constructToCat.get(construct1), constructToCat.get(construct2));
-		if (catComparison == IPosetOfCategories.SUPER_CATEGORY 
+		if (catComparison == IPosetOfCategories.SUPER 
 				&& IPosetOfConstructs.generates(construct1, construct2))
 			return IPosetOfConstructs.ABSTRACTION_OF;
-		else if (catComparison == IPosetOfCategories.SUB_CATEGORY && IPosetOfConstructs.generates(construct2, construct1))
+		else if (catComparison == IPosetOfCategories.SUB && IPosetOfConstructs.generates(construct2, construct1))
 			return IPosetOfConstructs.INSTANCE_OF;
 		else if (catComparison == IPosetOfCategories.EQUALS 
 				&& IPosetOfConstructs.generates(construct1, construct2) && IPosetOfConstructs.generates(construct2, construct1))

@@ -63,13 +63,13 @@ public class PosetOfConstructsTest {
 				int comparison = constRel3.compare(c1, c2);
 				switch (comparison) {
 					case IPosetOfConstructs.ABSTRACTION_OF : 
-						if (IPosetOfCategories.compareStatic(cat1, cat2) != IPosetOfCategories.SUPER_CATEGORY)
+						if (IPosetOfCategories.compareStatic(cat1, cat2) != IPosetOfCategories.SUPER)
 							expected = false;
 						if (!IPosetOfConstructs.generates(c1, c2))
 							expected = false;
 						break;
 					case IPosetOfConstructs.INSTANCE_OF :
-						if (IPosetOfCategories.compareStatic(cat1, cat2) != IPosetOfCategories.SUB_CATEGORY)
+						if (IPosetOfCategories.compareStatic(cat1, cat2) != IPosetOfCategories.SUB)
 							expected = false;
 						if (!IPosetOfConstructs.generates(c2, c1))
 							expected = false;
@@ -80,9 +80,9 @@ public class PosetOfConstructsTest {
 						break;
 					case IPosetOfConstructs.UNCOMPARABLE : 
 						if ((IPosetOfConstructs.generates(c1, c2) 
-								&& IPosetOfCategories.compareStatic(cat1, cat2) == IPosetOfCategories.SUPER_CATEGORY) 
+								&& IPosetOfCategories.compareStatic(cat1, cat2) == IPosetOfCategories.SUPER) 
 									|| (IPosetOfConstructs.generates(c2, c1) 
-											&& IPosetOfCategories.compareStatic(cat2, cat1) == IPosetOfCategories.SUPER_CATEGORY))
+											&& IPosetOfCategories.compareStatic(cat2, cat1) == IPosetOfCategories.SUPER))
 							expected = false;
 						break;
 					default : 
