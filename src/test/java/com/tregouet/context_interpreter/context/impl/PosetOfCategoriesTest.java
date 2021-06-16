@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
+import com.tregouet.context_interpreter.context.ILatticeBasedPOCat;
 import com.tregouet.context_interpreter.context.IPosetOfCategories;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
@@ -34,17 +35,17 @@ public class PosetOfCategoriesTest {
 	private static Path shapes3 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes3.txt");
 	private static Path shapes2 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes2.txt");
 	List<IContextObject> shapes3Obj;
-	IPosetOfCategories catRel3;
+	ILatticeBasedPOCat catRel3;
 	List<IContextObject> shapes2Obj;
-	IPosetOfCategories catRel2;
+	ILatticeBasedPOCat catRel2;
 	
 	@SuppressWarnings("unused")
 	@Before
 	public void setUp() throws Exception {
 		shapes3Obj = GenericFileReader.getContextObjects(shapes3);
-		catRel3 = new PosetOfCategories(shapes3Obj);
+		catRel3 = new LatticeBasedPOCat(shapes3Obj);
 		shapes2Obj = GenericFileReader.getContextObjects(shapes2);
-		catRel2 = new PosetOfCategories(shapes2Obj);
+	catRel2 = new LatticeBasedPOCat(shapes2Obj);
 	}
 
 	@Test
@@ -171,84 +172,9 @@ public class PosetOfCategoriesTest {
 	}
 	
 	@Test
-	public void whenTransitionRelationReturnedThenIsASubsetOfOriginalRelationOverCats() {
-		boolean isASubset = true;
-		Map<ICategory, Set<ICategory>> relation = catRel3.getRelOverCategories();
-		Map<ICategory, Set<ICategory>> transitionRelation = catRel3.getTransitionRelationOverCategories();
-		for (ICategory cat : transitionRelation.keySet()) {
-			if (!relation.containsKey(cat))
-				isASubset = false;
-			else if (!relation.get(cat).containsAll(transitionRelation.get(cat)))
-				isASubset = false;
-			/*
-			int diff = relation.get(cat).size() - transitionRelation.get(cat).size();
-			System.out.println("original / transition relation diff : " + diff);
-			*/
-		}
-		assertTrue(isASubset);
-	}
-	
-	@Test
-	public void whenTransitionRelationReturnedThenContainsRetrictedSuccessorRelationOverCats() {
-		//Successor relation is restricted to the set of all categories but the minimum
-		boolean containsSuccRelation = true;
-		Map<ICategory, Set<ICategory>> succRelation = catRel3.getSuccRelOverCategories();
-		//set restriction
-		Map<ICategory, Set<ICategory>> restrictedSuccRelation = new HashMap<ICategory, Set<ICategory>>();
-		for (Entry<ICategory, Set<ICategory>> succEntry : succRelation.entrySet()) {
-			if (!succEntry.getKey().equals(catRel3.getLatticeMin())) {
-				Set<ICategory> relatedMinusMin = new HashSet<ICategory>(succEntry.getValue());
-				relatedMinusMin.remove(catRel3.getLatticeMin());
-				restrictedSuccRelation.put(succEntry.getKey(), relatedMinusMin);
-			}
-		}
-		//test
-		Map<ICategory, Set<ICategory>> transitionRelation = catRel3.getTransitionRelationOverCategories();
-		for (ICategory cat : restrictedSuccRelation.keySet()) {
-			if (!transitionRelation.containsKey(cat))
-				containsSuccRelation = false;
-			else if (!transitionRelation.get(cat).containsAll(restrictedSuccRelation.get(cat)))
-				containsSuccRelation = false;
-			/*
-			int diff = transitionRelation.get(cat).size() - restrictedSuccRelation.get(cat).size(); 
-			if (diff != 0) {
-				System.out.println("category of interest : ");
-				for (IConstruct catConstr : cat.getIntent()) {
-					System.out.println(catConstr.toString());
-				}
-				System.out.println(System.lineSeparator() + "lattice max intent : ");
-				for (IConstruct maxConstr : catRel3.getCatLatticeMax().getIntent()) {
-					System.out.println(maxConstr.toString());
-				}
-				System.out.println(System.lineSeparator() + "transition / succ relation diff : " + diff);
-				System.out.print(System.lineSeparator() + "****Related in transition relation :");
-				for (ICategory transRelated : transitionRelation.get(cat)) {
-					System.out.println(System.lineSeparator() + "*New related category : ");
-					for (IConstruct transRelatedConstr : transRelated.getIntent())
-						System.out.println(transRelatedConstr.toString());
-				}
-				System.out.println(System.lineSeparator() + "****Related in successor relation :");
-				for (ICategory succRelated : restrictedSuccRelation.get(cat)) {
-					System.out.println(System.lineSeparator() + "*New related category : ");
-					for (IConstruct succRelatedConstr : succRelated.getIntent())
-						System.out.println(succRelatedConstr.toString());
-				}
-			}
-			*/
-		}
-		assertTrue(containsSuccRelation);
-	}
-	
-	@Test
 	public void whenSuccRelGraphBuildingRequestedThenDone() throws VisualizationException {
 		assertTrue(catRel2.buildSuccessorRelationGraph("succ2"));
-	}
-	
-	@Test
-	public void whenTransRelGraphBuildingRequestedThenDone() throws VisualizationException {
-		assertTrue(catRel2.buildTransitionRelationGraph("trans2"));
 	}	
-	
 	
 	private void printCategories(IPosetOfCategories catRel) {
 		int maxRank = catRel.getAcceptCategory().rank();

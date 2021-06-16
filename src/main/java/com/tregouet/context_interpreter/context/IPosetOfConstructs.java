@@ -64,8 +64,6 @@ public interface IPosetOfConstructs {
 	
 	Map<IConstruct, Set<IConstruct>> getSuccRelation();
 	
-	Map<ICategory, Set<ICategory>> getTransitionRelationOverCategories();
-	
-	Set<IConstruct> getUpperBounds(IConstruct construct);
+	Set<IConstruct> getUpperSet(IConstruct construct);
 
 }

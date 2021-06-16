@@ -28,6 +28,8 @@ public interface IRelation<T> {
 	Set<T> getPredecessorsOf(T elem);
 
 	Set<T> getSuccessorsOf(T elem);
+	
+	Set<T> getSuccessorsInSpecifiedSubset(T elem, Set<T> subset);
 
 	Set<List<T>> getSpanningChainsFrom(T root);
 	
@@ -41,6 +43,10 @@ public interface IRelation<T> {
 	
 	Set<T> getMinimalElements();
 	
+	Set<ITree<T>> getAllMaxSpanningTrees();
+	
 	void addAsMaximum(T max);
+	
+	IRelation<T> restrictTo(Set<T> subset);
 
 }

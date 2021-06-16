@@ -2,7 +2,6 @@ package com.tregouet.context_interpreter.context.impl;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;

@@ -9,26 +9,55 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import com.tregouet.context_interpreter.context.IRelation;
+import com.tregouet.context_interpreter.context.ITree;
 
 public class Relation<T> implements IRelation<T> {
 	
 	//elements sorted by the decreasing size of their lowerset
-	private final TreeSet<T> set;
+	private final List<T> set;
 	//non-reflexive
 	private final Map<T, Set<T>> relation;
 	private final Map<T, Set<T>> succRelation = new HashMap<T, Set<T>>();
-	private final Map<T, Set<T>> precRelation = new HashMap<T, Set<T>>();;
+	private final Map<T, Set<T>> precRelation = new HashMap<T, Set<T>>();
 	
 	public Relation(Map<T, Set<T>> relation) {
 		this.relation = relation;
-		set = new TreeSet<T>(Comparator.comparing(n -> -(this.relation.get(n).size())));
+		set = new ArrayList<T>(relation.keySet());
+		set.sort(Comparator.comparing(n -> -(this.relation.get(n).size())));
 		setSuccRelation();
 		setPrecRelation();
 	}
+	
+	protected Relation(T seed) {
+		set = new ArrayList<T>();
+		set.add(seed);
+		relation = new HashMap<T, Set<T>>();
+		relation.put(seed, new HashSet<T>());
+		succRelation.put(seed, new HashSet<T>());
+		precRelation.put(seed, new HashSet<T>());
+	}
+	
+	protected Relation(T root, Set<ITree<T>> subTrees) {
+		relation = new HashMap<T, Set<T>>();
+		Set<T> nonRoots = new HashSet<T>();
+		Set<T> subRoots = new HashSet<T>();
+		for (ITree<T> subTree : subTrees) {
+			nonRoots.addAll(subTree.getSet());
+			subRoots.add(subTree.getRoot());
+			relation.putAll(subTree.getRelationMap());
+			succRelation.putAll(subTree.getSuccRelationMap());
+			precRelation.putAll(subTree.getPrecRelationMap());
+		}
+		relation.put(root, nonRoots);
+		succRelation.put(root, subRoots);
+		for (T subRoot : subRoots)
+			precRelation.get(subRoot).add(root);
+		set = new ArrayList<T>(relation.keySet());
+		set.sort(Comparator.comparing(n -> -(this.relation.get(n).size())));
+	}	
 	
 	@Override
 	public int compare(T elem1, T elem2) {
@@ -181,7 +210,7 @@ public class Relation<T> implements IRelation<T> {
 	public void addAsMaximum(T max) {
 		Set<T> related = new HashSet<T>(set);
 		relation.put(max, related);
-		set.add(max);
+		set.add(0,max);
 		succRelation.put(max, new HashSet<T>());
 		precRelation.put(max, getMaximalElements());
 	}
@@ -199,6 +228,61 @@ public class Relation<T> implements IRelation<T> {
 							.filter(n -> relation.get(n).isEmpty())
 							.collect(Collectors.toSet());
 		return minElem;
+	}
+
+	@Override
+	public Set<ITree<T>> getAllMaxSpanningTrees() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	private Set<ITree<T>> getSubTreesFrom(T elem, Set<T> explorableSubSet) {
+		return null;
+	}
+	
+	@Override
+	public Set<T> getSuccessorsInSpecifiedSubset(T elem, Set<T> subset) {
+		Set<T> succInSubset = new HashSet<>(succRelation.get(elem));
+		succInSubset.retainAll(subset);
+		return succInSubset;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((relation == null) ? 0 : relation.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Relation<?> other = (Relation<?>) obj;
+		if (relation == null) {
+			if (other.relation != null)
+				return false;
+		} else if (!relation.equals(other.relation))
+			return false;
+		return true;
+	}
+
+	@Override
+	public IRelation<T> restrictTo(Set<T> subset) {
+		Map<T, Set<T>> restrictionMap = new HashMap<T, Set<T>>();
+		for (T key : relation.keySet()) {
+			if (subset.contains(key)) {
+				Set<T> value = new HashSet<T>(relation.get(key));
+				value.retainAll(subset);
+				restrictionMap.put(key, value);
+			}
+		}
+		return new Relation<T>(restrictionMap);
 	}
 
 }

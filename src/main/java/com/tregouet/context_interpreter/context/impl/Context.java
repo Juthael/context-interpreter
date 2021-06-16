@@ -22,7 +22,7 @@ public class Context implements IContext {
 
 	public Context(List<IContextObject> objects) {
 		this.objects = objects;
-		catPoset = new PosetOfCategories(objects);
+		catPoset = new LatticeBasedPOCat(objects);
 		//yet to do
 		compilerBuilder = null;
 		representations = null;

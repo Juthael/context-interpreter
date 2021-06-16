@@ -12,7 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
+import com.tregouet.context_interpreter.context.ILatticeBasedPOCat;
 import com.tregouet.context_interpreter.context.IPosetOfCategories;
+import com.tregouet.context_interpreter.context.impl.LatticeBasedPOCat;
 import com.tregouet.context_interpreter.context.impl.PosetOfCategories;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
@@ -22,12 +24,12 @@ public class AbstractConstructTest {
 
 	private static Path shapes3 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes3.txt");
 	List<IContextObject> shapes3Obj;
-	IPosetOfCategories catRel3;
+	ILatticeBasedPOCat catRel3;
 	
 	@Before
 	public void setUp() throws Exception {
 		shapes3Obj = GenericFileReader.getContextObjects(shapes3);
-		catRel3 = new PosetOfCategories(shapes3Obj);
+		catRel3 = new LatticeBasedPOCat(shapes3Obj);
 	}
 
 	@Test

@@ -141,5 +141,15 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 	public Set<ICategory> getLowerSet(Set<ICategory> categories) {
 		return relation.getLowerSet(categories);
 	}
+
+	@Override
+	public ICategory getAcceptCategory() {
+		return accept;
+	}
+
+	@Override
+	public ICategory getPreAcceptCategory() {
+		return preAccept;
+	}	
 	
 }
