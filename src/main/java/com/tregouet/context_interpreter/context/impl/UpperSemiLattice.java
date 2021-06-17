@@ -18,6 +18,7 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 	
 	//elements sorted by the decreasing size of their lowerset
 	private final List<T> set;
+	private T root = null;
 	//non-reflexive
 	private final Map<T, Set<T>> relation;
 	private final Map<T, Set<T>> succRelation = new HashMap<T, Set<T>>();
@@ -27,11 +28,13 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 		this.relation = relation;
 		set = new ArrayList<T>(relation.keySet());
 		set.sort(Comparator.comparing(n -> -(this.relation.get(n).size())));
+		root = set.get(0);
 		setSuccRelation();
 		setPrecRelation();
 	}
 	
 	protected UpperSemiLattice(T seed) {
+		this.root = seed;
 		set = new ArrayList<T>();
 		set.add(seed);
 		relation = new HashMap<T, Set<T>>();
@@ -41,6 +44,7 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 	}
 	
 	protected UpperSemiLattice(T root, Set<ITree<T>> subTrees) {
+		this.root = root;
 		relation = new HashMap<T, Set<T>>();
 		Set<T> nonRoots = new HashSet<T>();
 		Set<T> subRoots = new HashSet<T>();
@@ -55,6 +59,7 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 		succRelation.put(root, subRoots);
 		for (T subRoot : subRoots)
 			precRelation.get(subRoot).add(root);
+		precRelation.put(root, new HashSet<T>());
 		set = new ArrayList<T>(relation.keySet());
 		set.sort(Comparator.comparing(n -> -(this.relation.get(n).size())));
 	}	
@@ -69,6 +74,11 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 			return EQUALS;
 		return UNCOMPARABLE;
 	}
+	
+	@Override
+	public T getRoot() {
+		return root;
+	}	
 	
 	@Override
 	public Set<T> getSet(){
@@ -97,7 +107,7 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 		Set<T> upperBounds = new HashSet<T>();
 		for (T e : set) {
 			if (relation.get(e).contains(elem))
-			upperBounds.add(elem);
+			upperBounds.add(e);
 		}
 		return upperBounds;
 	}
@@ -213,12 +223,6 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 							.collect(Collectors.toSet());
 		return minElem;
 	}
-
-	@Override
-	public Set<ITree<T>> getAllMaxSpanningTrees() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 	@Override
 	public Set<T> getSuccessorsInSpecifiedSubset(T elem, Set<T> subset) {
@@ -281,14 +285,7 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 
 	@Override
 	public T getMaximum() {
-		T max = null;
-		int idx = 0;
-		while (max == null) {
-			if (precRelation.get(set.get(idx)).isEmpty())
-				max = set.get(idx);
-			else idx++; 
-		}
-		return max;
+		return root;
 	}
 
 	@Override
@@ -302,6 +299,7 @@ public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 		precRelation.get(previousMax).add(newMax);
 		precRelation.put(newMax, new HashSet<T>());
 		set.add(0, newMax);
+		root = newMax;
 	}
 
 }

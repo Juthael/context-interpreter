@@ -15,6 +15,8 @@ public interface IUpperSemiLattice<T> {
 
 	Set<T> get(T elem);
 	
+	T getRoot();
+	
 	Set<T> getSet();
 	
 	Set<T> getLowerSet(T elem);
@@ -48,8 +50,6 @@ public interface IUpperSemiLattice<T> {
 	void addAsNewMax(T newMax);
 	
 	Set<T> getMinimalElements();
-	
-	Set<ITree<T>> getAllMaxSpanningTrees();
 	
 	IUpperSemiLattice<T> getRestrictionTo(Set<T> subset);
 
