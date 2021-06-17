@@ -11,20 +11,20 @@ import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationExcep
 import com.tregouet.context_interpreter.io.outputs.viz.IPosetOfCatGraphBuilder;
 import com.tregouet.context_interpreter.io.outputs.viz.impl.PosetOfCatGraphBuilder;
 
-public interface IPosetOfCategories {
+public interface ICategoryUSL {
 	
 	public static int compareStatic(ICategory cat1, ICategory cat2) {
 		if (!cat1.getExtent().equals(cat2.getExtent())) {
 			if (cat1.getExtent().containsAll(cat2.getExtent()))
-				return IRelation.SUPER;
+				return IUpperSemiLattice.SUPER;
 			if (cat2.getExtent().containsAll(cat1.getExtent()))
-				return IRelation.SUB;
-			return IRelation.UNCOMPARABLE;
+				return IUpperSemiLattice.SUB;
+			return IUpperSemiLattice.UNCOMPARABLE;
 		}
 		else {
 			if (cat1.type() > cat2.type())
-				return IRelation.SUPER;
-			return IRelation.SUB;
+				return IUpperSemiLattice.SUPER;
+			return IUpperSemiLattice.SUB;
 		}
 	}
 	

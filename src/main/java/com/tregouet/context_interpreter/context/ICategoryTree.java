@@ -4,7 +4,7 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 
-public interface ITreeOfCategories extends IPosetOfCategories {
+public interface ICategoryTree extends ICategoryUSL {
 	
 	ICategory getRoot();
 	

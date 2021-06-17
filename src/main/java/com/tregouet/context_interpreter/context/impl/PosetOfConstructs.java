@@ -8,18 +8,18 @@ import java.util.Map;
 import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
-import com.tregouet.context_interpreter.context.IPosetOfCategories;
+import com.tregouet.context_interpreter.context.ICategoryUSL;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
-import com.tregouet.context_interpreter.context.IRelation;
+import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 
 public abstract class PosetOfConstructs implements IPosetOfConstructs {
 
-	private final IPosetOfCategories catPoset;
+	private final ICategoryUSL catPoset;
 	private final Map<IConstruct, ICategory> constructToCat;
-	private final IRelation<IConstruct> relation;
+	private final IUpperSemiLattice<IConstruct> relation;
 	
-	public PosetOfConstructs(IPosetOfCategories catPoset){
+	public PosetOfConstructs(ICategoryUSL catPoset){
 		this.catPoset = catPoset;
 		constructToCat = catPoset.getConstructToCategoryMap();
 		relation = setRelation();
@@ -28,12 +28,12 @@ public abstract class PosetOfConstructs implements IPosetOfConstructs {
 	@Override
 	public int compare(IConstruct construct1, IConstruct construct2) {
 		int catComparison = catPoset.compare(constructToCat.get(construct1), constructToCat.get(construct2));
-		if (catComparison == IRelation.SUPER 
+		if (catComparison == IUpperSemiLattice.SUPER 
 				&& IPosetOfConstructs.generates(construct1, construct2))
 			return IPosetOfConstructs.ABSTRACTION_OF;
-		else if (catComparison == IRelation.SUB && IPosetOfConstructs.generates(construct2, construct1))
+		else if (catComparison == IUpperSemiLattice.SUB && IPosetOfConstructs.generates(construct2, construct1))
 			return IPosetOfConstructs.INSTANCE_OF;
-		else if (catComparison == IRelation.EQUALS 
+		else if (catComparison == IUpperSemiLattice.EQUALS 
 				&& IPosetOfConstructs.generates(construct1, construct2) && IPosetOfConstructs.generates(construct2, construct1))
 			return IPosetOfConstructs.SAME_AS;
 		return IPosetOfConstructs.UNCOMPARABLE;
@@ -51,10 +51,7 @@ public abstract class PosetOfConstructs implements IPosetOfConstructs {
 
 	@Override
 	public IConstruct getMaximum() {
-		List<IConstruct> maxima = new ArrayList<IConstruct>(relation.getMaximalElements());
-		if (maxima.size() == 1)
-			return maxima.get(0);
-		else return null;
+		return relation.getMaximum();
 	}
 
 	@Override
@@ -94,10 +91,10 @@ public abstract class PosetOfConstructs implements IPosetOfConstructs {
 
 	@Override
 	public Set<IConstruct> getUpperSet(IConstruct construct) {
-		return relation.getUpperSet(construct);
+		return relation.getStrictUpperBounds(construct);
 	}
 
-	private IRelation<IConstruct> setRelation() {
+	private IUpperSemiLattice<IConstruct> setRelation() {
 		Map<IConstruct, Set<IConstruct>> relationMap = new HashMap<IConstruct, Set<IConstruct>>();
 		List<IConstruct> constructs = new ArrayList<IConstruct>();
 		for (IConstruct construct : constructToCat.keySet()) {
@@ -115,7 +112,7 @@ public abstract class PosetOfConstructs implements IPosetOfConstructs {
 					relationMap.get(c2).add(c1);
 			}
 		}
-		return new Relation<IConstruct>(relationMap);
+		return new UpperSemiLattice<IConstruct>(relationMap);
 	}
 
 }

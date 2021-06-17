@@ -8,26 +8,27 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
-import com.tregouet.context_interpreter.context.IPosetOfCategories;
-import com.tregouet.context_interpreter.context.IRelation;
+import com.tregouet.context_interpreter.context.ICategoryUSL;
+import com.tregouet.context_interpreter.context.ITree;
+import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
 import com.tregouet.context_interpreter.io.outputs.viz.IPosetOfCatGraphBuilder;
 import com.tregouet.context_interpreter.io.outputs.viz.impl.PosetOfCatGraphBuilder;
 
-public abstract class PosetOfCategories implements IPosetOfCategories {
+public abstract class CategoryUSL implements ICategoryUSL {
 
 	protected final List<IContextObject> objects;
-	protected IRelation<ICategory> relation;
+	protected IUpperSemiLattice<ICategory> relation;
 	protected ICategory accept;
 	protected ICategory preAccept;
 	
-	public PosetOfCategories(List<IContextObject> objects) {
+	protected CategoryUSL(List<IContextObject> objects) {
 		this.objects = objects;
 	}	
 	
-	protected PosetOfCategories(List<IContextObject> objects, IRelation<ICategory> treeRelation) {
+	protected CategoryUSL(List<IContextObject> objects, ITree<ICategory> treeRelation) {
 		this.objects = objects;
 		relation = treeRelation;
 	}	
@@ -47,12 +48,12 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 	@Override
 	public int compare(ICategory cat1, ICategory cat2) {
 		if (relation.get(cat1).contains(cat2))
-			return IRelation.SUPER;
+			return IUpperSemiLattice.SUPER;
 		else if (relation.get(cat2).contains(cat1))
-			return IRelation.SUB;
+			return IUpperSemiLattice.SUB;
 		else if (cat2.equals(cat1))
-			return IRelation.EQUALS;
-		return IRelation.UNCOMPARABLE;
+			return IUpperSemiLattice.EQUALS;
+		return IUpperSemiLattice.UNCOMPARABLE;
 	}
 
 	@Override
@@ -120,7 +121,7 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 
 	@Override
 	public Set<ICategory> getUpperSet(ICategory category) {
-		return relation.getUpperSet(category);
+		return relation.getStrictUpperBounds(category);
 	}
 
 	//recursive
@@ -134,12 +135,12 @@ public abstract class PosetOfCategories implements IPosetOfCategories {
 	
 	@Override
 	public Set<ICategory> getUpperSet(Set<ICategory> categories) {
-		return relation.getUpperSet(categories);
+		return relation.getStrictUpperBounds(categories);
 	}
 	
 	@Override
 	public Set<ICategory> getLowerSet(Set<ICategory> categories) {
-		return relation.getLowerSet(categories);
+		return relation.getStrictLowerBounds(categories);
 	}
 
 	@Override

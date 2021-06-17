@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 
-public interface ILatticeBasedPOCat extends IPosetOfCategories {
+public interface ICategoryLattice extends ICategoryUSL {
 	
 	Set<ICategory> getAllCategoriesExceptLatticeMinimum();
 	
@@ -23,6 +23,6 @@ public interface ILatticeBasedPOCat extends IPosetOfCategories {
 	
 	IPOCLooselyRestricted getLooselyRestrictedPosetOfConstructs();
 	
-	Set<ITreeOfCategories> getTreesOfCategories();
+	Set<ICategoryTree> getTreesOfCategories();
 
 }

@@ -2,13 +2,13 @@ package com.tregouet.context_interpreter.context.impl;
 
 import java.util.Set;
 
+import com.tregouet.context_interpreter.context.ICategoryUSL;
 import com.tregouet.context_interpreter.context.IPOCLooselyRestricted;
 import com.tregouet.context_interpreter.context.IPOCTightlyRestricted;
-import com.tregouet.context_interpreter.context.IPosetOfCategories;
 
 public class POCLooselyRestricted extends PosetOfConstructs implements IPOCLooselyRestricted {
 
-	public POCLooselyRestricted(IPosetOfCategories catPoset) {
+	public POCLooselyRestricted(ICategoryUSL catPoset) {
 		super(catPoset);
 	}
 

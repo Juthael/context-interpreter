@@ -10,9 +10,9 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.compiler.impl.Category;
-import com.tregouet.context_interpreter.context.ILatticeBasedPOCat;
+import com.tregouet.context_interpreter.context.ICategoryLattice;
 import com.tregouet.context_interpreter.context.IPOCLooselyRestricted;
-import com.tregouet.context_interpreter.context.ITreeOfCategories;
+import com.tregouet.context_interpreter.context.ICategoryTree;
 import com.tregouet.context_interpreter.context.utils.IntentBldr;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
@@ -26,7 +26,7 @@ import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SubseqFinder;
 import com.tregouet.subseq_finder.impl.SymbolSeq;
 
-public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBasedPOCat {
+public class CategoryLattice extends CategoryUSL implements ICategoryLattice {
 	
 	protected final Set<ICategory> lattice = new HashSet<ICategory>();
 	protected ICategory latticeMax;
@@ -34,7 +34,7 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 	protected final Set<ICategory> latticeObj = new HashSet<ICategory>();
 	protected ICategory latticeMin;	
 
-	public LatticeBasedPOCat(List<IContextObject> objects) {
+	public CategoryLattice(List<IContextObject> objects) {
 		super(objects);
 		AVariable.initializeNameProvider();
 		buildCategoryLatticeStrictPartialOrderRelation();
@@ -100,7 +100,7 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 
 	@Override
 	public IPOCLooselyRestricted getLooselyRestrictedPosetOfConstructs() {
-		return new POCLooselyRestricted(this);
+		return null;
 	}
 	
 	@Override
@@ -109,53 +109,13 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 	}
 	
 	@Override
-	public Set<ITreeOfCategories> getTreesOfCategories() {
+	public Set<ICategoryTree> getTreesOfCategories() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	private Set<Map<ICategory, Set<ICategory>>> getSubTreesFrom(ICategory category, Set<ICategory> explorableLowerSet) {
-		//set of alternative tree relations from this category
-		Set<Map<ICategory, Set<ICategory>>> subTrees = new HashSet<Map<ICategory, Set<ICategory>>>();
-		if (category.type() == ICategory.LATT_OBJ) {
-			Map<ICategory, Set<ICategory>> leafMap = new HashMap<>();
-			leafMap.put(category, new HashSet<ICategory>());
-			subTrees.add(leafMap);
-		}
-		else {
-			Set<ICategory> attainableSuccessors = getSuccessorsInSpecifiedSubset(category, explorableLowerSet);
-			/*
-			 * the set of attainable successors is the intersection of the set of the specified category's 
-			 * successors in the relation over categories, with the specified explorable subset.
-			 */
-			Set<List<ICategory>> permutationsOfSuccessors = getPermutations(attainableSuccessors);
-			/*
-			 * The explorable lower set of a given successor may vary according to its index in the list of 
-			 * successors (because of non-overlapping with previous successor's lower sets)
-			 */
-			for (List<ICategory> listOfSuccessors : permutationsOfSuccessors) {
-				Map<ICategory, Set<ICategory>> subTreeForCurrPerm = new HashMap<ICategory, Set<ICategory>>();
-				//each permutation yields one tree relation NON
-				List<Set<ICategory>> explorableLowerSets = getExplorableLowerSets(listOfSuccessors);
-				//ith set is the explorable lower set for the ith successor in the current list of successors
-				for (int i = 0 ; i < listOfSuccessors.size() ; i++) {
-					ICategory successor = listOfSuccessors.get(i);
-					Set<ICategory> succExplorableLowerSet = explorableLowerSets.get(i);
-					//a successor with an empty explorable lower set is either an object, or a dead-end
-					if (!succExplorableLowerSet.isEmpty() || successor.type() == ICategory.LATT_OBJ) {
-						//recursion
-						for (Map<ICategory, Set<ICategory>> subTreeFromCurrSucc : 
-								getSubTreesFrom(successor, succExplorableLowerSet))
-							subTreeForCurrPerm.putAll(subTreeFromCurrSucc);
-					}
-				}
-				//make specified cat the root of the sub-tree for current permutation of successors
-				Set<ICategory> relatedToSpecCat = subTreeForCurrPerm.keySet();
-				subTreeForCurrPerm.put(category, relatedToSpecCat);
-				subTrees.add(subTreeForCurrPerm);
-			}	
-		}
-		return subTrees;
+		return null;
 	}
 	
 	private Set<ICategory> getSuccessorsInSpecifiedSubset(ICategory cat, Set<ICategory> subset){
@@ -165,8 +125,8 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 	}
 	
 	private void addAcceptAndPreAcceptCatToRelation() {
-		relation.addAsMaximum(preAccept);
-		relation.addAsMaximum(accept);
+		relation.addAsNewMax(preAccept);
+		relation.addAsNewMax(accept);
 	}
 	
 	private void buildCategoryLatticeStrictPartialOrderRelation() {
@@ -202,7 +162,7 @@ public class LatticeBasedPOCat extends PosetOfCategories implements ILatticeBase
 					relationMap.get(catList.get(j)).add(catList.get(i));
 			}
 		}
-		relation = new Relation<ICategory>(relationMap);
+		relation = new UpperSemiLattice<ICategory>(relationMap);
 	}
 	
 	private Map<Set<IConstruct>, Set<IContextObject>> buildIntentToExtentRel() {

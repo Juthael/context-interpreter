@@ -11,10 +11,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.tregouet.context_interpreter.context.IRelation;
+import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.context.ITree;
 
-public class Relation<T> implements IRelation<T> {
+public class UpperSemiLattice<T> implements IUpperSemiLattice<T> {
 	
 	//elements sorted by the decreasing size of their lowerset
 	private final List<T> set;
@@ -23,7 +23,7 @@ public class Relation<T> implements IRelation<T> {
 	private final Map<T, Set<T>> succRelation = new HashMap<T, Set<T>>();
 	private final Map<T, Set<T>> precRelation = new HashMap<T, Set<T>>();
 	
-	public Relation(Map<T, Set<T>> relation) {
+	public UpperSemiLattice(Map<T, Set<T>> relation) {
 		this.relation = relation;
 		set = new ArrayList<T>(relation.keySet());
 		set.sort(Comparator.comparing(n -> -(this.relation.get(n).size())));
@@ -31,7 +31,7 @@ public class Relation<T> implements IRelation<T> {
 		setPrecRelation();
 	}
 	
-	protected Relation(T seed) {
+	protected UpperSemiLattice(T seed) {
 		set = new ArrayList<T>();
 		set.add(seed);
 		relation = new HashMap<T, Set<T>>();
@@ -40,7 +40,7 @@ public class Relation<T> implements IRelation<T> {
 		precRelation.put(seed, new HashSet<T>());
 	}
 	
-	protected Relation(T root, Set<ITree<T>> subTrees) {
+	protected UpperSemiLattice(T root, Set<ITree<T>> subTrees) {
 		relation = new HashMap<T, Set<T>>();
 		Set<T> nonRoots = new HashSet<T>();
 		Set<T> subRoots = new HashSet<T>();
@@ -76,24 +76,24 @@ public class Relation<T> implements IRelation<T> {
 	}
 	
 	@Override
-	public Set<T> getLowerSet(T elem){
+	public Set<T> getStrictLowerBounds(T elem){
 		return new HashSet<T>(relation.get(elem));
 	}
 	
 	@Override
-	public Set<T> getLowerSet(Set<T> elems){
+	public Set<T> getStrictLowerBounds(Set<T> elems){
 		Set<T> lowerBounds = new HashSet<T>();
 		List<T> elemList = new ArrayList<T>(elems);
 		for (int i = 0 ; i < elems.size() ; i++) {
 			if (i == 0)
-				lowerBounds.addAll(getLowerSet(elemList.get(i)));
-			else lowerBounds.retainAll(getLowerSet(elemList.get(i)));
+				lowerBounds.addAll(getStrictLowerBounds(elemList.get(i)));
+			else lowerBounds.retainAll(getStrictLowerBounds(elemList.get(i)));
 		}
 		return lowerBounds;
 	}
 	
 	@Override
-	public Set<T> getUpperSet(T elem){
+	public Set<T> getStrictUpperBounds(T elem){
 		Set<T> upperBounds = new HashSet<T>();
 		for (T e : set) {
 			if (relation.get(e).contains(elem))
@@ -103,13 +103,13 @@ public class Relation<T> implements IRelation<T> {
 	}
 	
 	@Override
-	public Set<T> getUpperSet(Set<T> elems) {
+	public Set<T> getStrictUpperBounds(Set<T> elems) {
 		Set<T> upperBounds = new HashSet<T>();
 		List<T> elemList = new ArrayList<T>(elems);
 		for (int i = 0 ; i < elems.size() ; i++) {
 			if (i == 0)
-				upperBounds.addAll(getUpperSet(elemList.get(i)));
-			else upperBounds.retainAll(getUpperSet(elemList.get(i)));
+				upperBounds.addAll(getStrictUpperBounds(elemList.get(i)));
+			else upperBounds.retainAll(getStrictUpperBounds(elemList.get(i)));
 		}
 		return upperBounds;
 	}	
@@ -207,22 +207,6 @@ public class Relation<T> implements IRelation<T> {
 	}
 
 	@Override
-	public void addAsMaximum(T max) {
-		Set<T> related = new HashSet<T>(set);
-		relation.put(max, related);
-		set.add(0,max);
-		succRelation.put(max, new HashSet<T>());
-		precRelation.put(max, getMaximalElements());
-	}
-
-	@Override
-	public Set<T> getMaximalElements() {
-		Set<T> maxElem = new HashSet<T>(set);
-		relation.values().stream().forEach(n -> maxElem.removeAll(n));
-		return maxElem;
-	}
-
-	@Override
 	public Set<T> getMinimalElements() {
 		Set<T> minElem = set.stream()
 							.filter(n -> relation.get(n).isEmpty())
@@ -233,10 +217,6 @@ public class Relation<T> implements IRelation<T> {
 	@Override
 	public Set<ITree<T>> getAllMaxSpanningTrees() {
 		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	private Set<ITree<T>> getSubTreesFrom(T elem, Set<T> explorableSubSet) {
 		return null;
 	}
 	
@@ -263,7 +243,7 @@ public class Relation<T> implements IRelation<T> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Relation<?> other = (Relation<?>) obj;
+		UpperSemiLattice<?> other = (UpperSemiLattice<?>) obj;
 		if (relation == null) {
 			if (other.relation != null)
 				return false;
@@ -273,7 +253,7 @@ public class Relation<T> implements IRelation<T> {
 	}
 
 	@Override
-	public IRelation<T> restrictTo(Set<T> subset) {
+	public IUpperSemiLattice<T> getRestrictionTo(Set<T> subset) {
 		Map<T, Set<T>> restrictionMap = new HashMap<T, Set<T>>();
 		for (T key : relation.keySet()) {
 			if (subset.contains(key)) {
@@ -282,7 +262,46 @@ public class Relation<T> implements IRelation<T> {
 				restrictionMap.put(key, value);
 			}
 		}
-		return new Relation<T>(restrictionMap);
+		return new UpperSemiLattice<T>(restrictionMap);
+	}
+
+	@Override
+	public Set<T> getLowerSet(T elem) {
+		Set<T> lowerSet = getStrictLowerBounds(elem);
+		lowerSet.add(elem);
+		return lowerSet;
+	}
+
+	@Override
+	public Set<T> getUpperSet(T elem) {
+		Set<T> upperSet = getStrictUpperBounds(elem);
+		upperSet.add(elem);
+		return upperSet;
+	}
+
+	@Override
+	public T getMaximum() {
+		T max = null;
+		int idx = 0;
+		while (max == null) {
+			if (precRelation.get(set.get(idx)).isEmpty())
+				max = set.get(idx);
+			else idx++; 
+		}
+		return max;
+	}
+
+	@Override
+	public void addAsNewMax(T newMax) {
+		Set<T> related = getSet();
+		T previousMax = getMaximum();
+		Set<T> newMaxSucc = new HashSet<T>();
+		newMaxSucc.add(previousMax);
+		relation.put(newMax, related);
+		succRelation.put(newMax, newMaxSucc);
+		precRelation.get(previousMax).add(newMax);
+		precRelation.put(newMax, new HashSet<T>());
+		set.add(0, newMax);
 	}
 
 }

@@ -15,11 +15,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
-import com.tregouet.context_interpreter.context.ILatticeBasedPOCat;
+import com.tregouet.context_interpreter.context.ICategoryLattice;
 import com.tregouet.context_interpreter.context.IPOCLooselyRestricted;
-import com.tregouet.context_interpreter.context.IPosetOfCategories;
+import com.tregouet.context_interpreter.context.ICategoryUSL;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
-import com.tregouet.context_interpreter.context.IRelation;
+import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.io.inputs.impl.GenericFileReader;
@@ -28,13 +28,13 @@ public class PosetOfConstructsTest {
 
 	private static Path shapes3 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes3.txt");
 	List<IContextObject> shapes3Obj;
-	ILatticeBasedPOCat catRel3;
+	ICategoryLattice catRel3;
 	IPOCLooselyRestricted constRel3;
 	
 	@Before
 	public void setUp() throws Exception {
 		shapes3Obj = GenericFileReader.getContextObjects(shapes3);
-		catRel3 = new LatticeBasedPOCat(shapes3Obj);
+		catRel3 = new CategoryLattice(shapes3Obj);
 		constRel3 = new POCLooselyRestricted(catRel3);
 	}
 	
@@ -64,13 +64,13 @@ public class PosetOfConstructsTest {
 				int comparison = constRel3.compare(c1, c2);
 				switch (comparison) {
 					case IPosetOfConstructs.ABSTRACTION_OF : 
-						if (IPosetOfCategories.compareStatic(cat1, cat2) != IRelation.SUPER)
+						if (ICategoryUSL.compareStatic(cat1, cat2) != IUpperSemiLattice.SUPER)
 							expected = false;
 						if (!IPosetOfConstructs.generates(c1, c2))
 							expected = false;
 						break;
 					case IPosetOfConstructs.INSTANCE_OF :
-						if (IPosetOfCategories.compareStatic(cat1, cat2) != IRelation.SUB)
+						if (ICategoryUSL.compareStatic(cat1, cat2) != IUpperSemiLattice.SUB)
 							expected = false;
 						if (!IPosetOfConstructs.generates(c2, c1))
 							expected = false;
@@ -81,9 +81,9 @@ public class PosetOfConstructsTest {
 						break;
 					case IPosetOfConstructs.UNCOMPARABLE : 
 						if ((IPosetOfConstructs.generates(c1, c2) 
-								&& IPosetOfCategories.compareStatic(cat1, cat2) == IRelation.SUPER) 
+								&& ICategoryUSL.compareStatic(cat1, cat2) == IUpperSemiLattice.SUPER) 
 									|| (IPosetOfConstructs.generates(c2, c1) 
-											&& IPosetOfCategories.compareStatic(cat2, cat1) == IRelation.SUPER))
+											&& ICategoryUSL.compareStatic(cat2, cat1) == IUpperSemiLattice.SUPER))
 							expected = false;
 						break;
 					default : 

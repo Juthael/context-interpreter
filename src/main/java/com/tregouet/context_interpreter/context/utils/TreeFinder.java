@@ -1,36 +1,32 @@
 package com.tregouet.context_interpreter.context.utils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.tregouet.context_interpreter.context.IRelation;
+import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.context.ITree;
 import com.tregouet.context_interpreter.context.impl.Tree;
 
 public class TreeFinder<T> {
 
-	//non-reflexive
-	private final IRelation<T> relation;
+	private final IUpperSemiLattice<T> upperSemiLattice;
 	private final T root;
-	private final Set<T> rootSuccInExplLowerSet;
+	private final Set<T> leaves;
 	private final Set<List<T>> permutationsOfSucc;
 	private final Set<ITree<T>> trees = new HashSet<ITree<T>>();
-	private final Set<T> attainableLeaves;
 	
-	public TreeFinder(IRelation<T> relation, T root, Set<T> explorableLowerSet) {
-		this.relation = relation;
-		this.root = root;		
-		rootSuccInExplLowerSet = relation.getSuccessorsInSpecifiedSubset(root, explorableLowerSet);
-		attainableLeaves = explorableLowerSet.stream()
-							.filter(c -> relation.getMinimalElements().contains(c))
-							.collect(Collectors.toSet());
-		permutationsOfSucc = permute(new ArrayList<T>(rootSuccInExplLowerSet), rootSuccInExplLowerSet.size());
+	public TreeFinder(IUpperSemiLattice<T> upperSemiLattice) {
+		this.upperSemiLattice = upperSemiLattice;
+		this.root = upperSemiLattice.getMaximum();		
+		this.leaves = upperSemiLattice.getMinimalElements();
+		Set<T> rootSucc = upperSemiLattice.getSuccessorsOf(root);
+		permutationsOfSucc = permute(new ArrayList<T>(rootSucc), rootSucc.size());
+		for (List<T> perm : permutationsOfSucc)
+			trees.addAll(getTreesForSpecifiedPermOfSuccessors(perm));
 	}
 	
 	public Set<ITree<T>> getTrees() {
@@ -38,90 +34,71 @@ public class TreeFinder<T> {
 	}
 	
 	private Set<ITree<T>> getTreesForSpecifiedPermOfSuccessors(List<T> permutationOfSucc) {
-		List<ITree<T>> trees = new ArrayList<ITree<T>>();
-		List<Set<T>> explorableLowerSets = getExplorableLowerSets(permutationOfSucc);
-		List<List<ITree<T>>> listOfSubTrees = new ArrayList<List<ITree<T>>>(); 
-		for (int i = 0 ; i < permutationOfSucc.size() ; i++) {
-			List<ITree<T>> treesFromCurrSucc = new ArrayList<ITree<T>>();
-			//HERE may be several empty lists
-			if (!explorableLowerSets.get(i).isEmpty()) {
-				TreeFinder<T> tF = new TreeFinder<T>(relation, permutationOfSucc.get(i), explorableLowerSets.get(i));
-				treesFromCurrSucc.addAll(tF.getTrees());
+		Set<ITree<T>> trees = new HashSet<ITree<T>>();
+		List<List<ITree<T>>> listsOfSubTrees = new ArrayList<List<ITree<T>>>();
+		//no empty set
+		List<Set<T>> subSemiLattices = getLeafReachingNonOverlappingSubSemiLatt(permutationOfSucc);
+		for (Set<T> subSemiLatt : subSemiLattices) {
+			Set<ITree<T>> treesInCurrSubSemiLatt = new HashSet<ITree<T>>();
+			if (subSemiLatt.size() > 1) {
+				TreeFinder<T> tF = new TreeFinder<T>(upperSemiLattice.getRestrictionTo(subSemiLatt));
+				treesInCurrSubSemiLatt.addAll(tF.getTrees());
 			}
-			else if (attainableLeaves.contains(permutationOfSucc.get(i))) {
-				treesFromCurrSucc.add(new Tree<T>(permutationOfSucc.get(i)));
-			}
-			//HERE
+			else treesInCurrSubSemiLatt.add(new Tree<T>(subSemiLatt.iterator().next()));
+			listsOfSubTrees.add(new ArrayList<>(treesInCurrSubSemiLatt));
 		}
+		//assemble new trees from subtrees
+		int[] listDimensions = new int[listsOfSubTrees.size()];
+		for (int i = 0 ; i < listsOfSubTrees.size() ; i++)
+			listDimensions[i] = listsOfSubTrees.get(i).size();
+		int[] coords = new int[listsOfSubTrees.size()];
+		coords[0] = -1;
+		while (nextCoord(coords, listDimensions)) {
+			Set<ITree<T>> subTrees = new HashSet<ITree<T>>();
+			for (int j = 0 ; j < listsOfSubTrees.size() ; j++) {
+				subTrees.add(listsOfSubTrees.get(j).get(coords[j]));
+			}
+			trees.add(new Tree<T>(root, subTrees));
+		}
+		return trees;
 	}
 	
-	//the returned list may contain empty sets
-	private List<Set<T>> getExplorableLowerSets(List<T> successors) {
-		List<Set<T>> explorableLSets = new ArrayList<Set<T>>();
-		List<Set<T>> nonOverlappingLSets = getNonOverlappingLowerSets(successors);
-		for (Set<T> nonOverlappingLSet : nonOverlappingLSets)
-			explorableLSets.add(getUpperSetOfTheSetOfLeavesIn(nonOverlappingLSet));
-		return explorableLSets;
+	private List<Set<T>> getLeafReachingNonOverlappingSubSemiLatt(List<T> successors) {
+		List<Set<T>> leafReachingSubSemiLatt = new ArrayList<Set<T>>();
+		List<Set<T>> nonOverlappingSubSemiLatts = getNonOverlappingSubSemiLatt(successors);
+		for (Set<T> subSemiLatt : nonOverlappingSubSemiLatts) {
+			Set<T> returnedSubSemiLatt = getUpperBoundsOfALeaf(subSemiLatt);
+			//a successor may be a dead end and lead to no leaf
+			if (!returnedSubSemiLatt.isEmpty())
+				leafReachingSubSemiLatt.add(returnedSubSemiLatt);
+		}
+		return leafReachingSubSemiLatt;
 	}
 	
-	//strict lower set
-	private List<Set<T>> getNonOverlappingLowerSets(List<T> list) {
-		List<Set<T>> nonOverlappingLSets = new ArrayList<Set<T>>();
-		Set<T> objToBeRemoved = new HashSet<T>();
+	//returns no empty set
+	private List<Set<T>> getNonOverlappingSubSemiLatt(List<T> list) {
+		List<Set<T>> subSemiLattices = new ArrayList<Set<T>>();
+		Set<T> alreadyPickedUp = new HashSet<T>();
 		for (int i = 0 ; i < list.size() ; i++) {
-			Set<T> nonOverlappingLSet = relation.getLowerSet(list.get(i));
-			nonOverlappingLSet.removeAll(objToBeRemoved);
+			Set<T> nonOverlappingSemiLatt = upperSemiLattice.getLowerSet(list.get(i));
+			nonOverlappingSemiLatt.removeAll(alreadyPickedUp);
 			if (i < list.size() - 1)
-				objToBeRemoved.addAll(nonOverlappingLSet);
-			nonOverlappingLSets.add(nonOverlappingLSet);				
+				alreadyPickedUp.addAll(nonOverlappingSemiLatt);
+			subSemiLattices.add(nonOverlappingSemiLatt);				
 		}
-		return nonOverlappingLSets;
+		return subSemiLattices;
 	}
 	
-	private Set<T> getUpperSetOfTheSetOfLeavesIn(Set<T> subset) {	
+	//may return an empty set
+	private Set<T> getUpperBoundsOfALeaf(Set<T> subset) {	
 		Set<T> leavesInSubset = subset.stream()
-					.filter(i -> attainableLeaves.contains(i))
-					.collect(Collectors.toSet());
-		subset.retainAll(getUpperSet(leavesInSubset));
-		return subset;
-	}
-	
-	//returns empty set if param is empty
-	private Set<T> getLowerSet(Set<T> elems) {
-		if (!elems.isEmpty()) {
-			Set<T> previousLowerBounds = null;
-			Set<T> lowerBounds = null;
-			Iterator<T> ite = elems.iterator();
-			while (ite.hasNext()) {
-				lowerBounds = relation.getLowerSet(ite.next());
-				if (previousLowerBounds != null) {
-					lowerBounds.retainAll(previousLowerBounds);
-				}
-				if (ite.hasNext())
-					previousLowerBounds = new HashSet<T>(lowerBounds);
-			}
-			return lowerBounds;
-		}
-		return new HashSet<T>();
-	}	
-	
-	//returns empty set if param is empty
-	private Set<T> getUpperSet(Set<T> elems) {
-		if (!elems.isEmpty()) {
-			Set<T> previousUpperBounds = null;
-			Set<T> upperBounds = null;
-			Iterator<T> ite = elems.iterator();
-			while (ite.hasNext()) {
-				upperBounds = relation.getUpperSet(ite.next());
-				if (previousUpperBounds != null) {
-					upperBounds.retainAll(previousUpperBounds);
-				}
-				if (ite.hasNext())
-					previousUpperBounds = new HashSet<T>(upperBounds);
-			}
-			return upperBounds;
-		}
-		return new HashSet<T>();
+				.filter(n -> leaves.contains(n))
+				.collect(Collectors.toSet());
+		Set<T> upperBoundsOfALeaf = new HashSet<T>();
+		for (T leaf : leavesInSubset)
+			upperBoundsOfALeaf.addAll(upperSemiLattice.getUpperSet(leaf));
+		upperBoundsOfALeaf.retainAll(subset);
+		return upperBoundsOfALeaf;
 	}	
 	
 	//Heap's algorithm
@@ -145,6 +122,15 @@ public class TreeFinder<T> {
 		T swapped = objects.get(i);
 		objects.set(i, objects.get(j));
 		objects.set(j, swapped);
-	}		
+	}
+	
+	private static boolean nextCoord(int[] coords, int[] dimensions){
+		for(int i=0;i<coords.length;++i) {
+			if (++coords[i] < dimensions[i])
+				return true;
+			else coords[i] = 0;
+	    }
+	    return false;
+    }	
 
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface IRelation<T> {
+public interface IUpperSemiLattice<T> {
 	
 	public static final int UNCOMPARABLE = -2;
 	public static final int SUB = -1;
@@ -16,14 +16,18 @@ public interface IRelation<T> {
 	Set<T> get(T elem);
 	
 	Set<T> getSet();
-
+	
 	Set<T> getLowerSet(T elem);
 
-	Set<T> getLowerSet(Set<T> elems);
+	Set<T> getStrictLowerBounds(T elem);
 
-	Set<T> getUpperSet(T elem);
+	Set<T> getStrictLowerBounds(Set<T> elems);
 	
-	Set<T> getUpperSet(Set<T> elems);
+	Set<T> getUpperSet(T elem);
+
+	Set<T> getStrictUpperBounds(T elem);
+	
+	Set<T> getStrictUpperBounds(Set<T> elems);
 
 	Set<T> getPredecessorsOf(T elem);
 
@@ -39,14 +43,14 @@ public interface IRelation<T> {
 	
 	Map<T, Set<T>> getPrecRelationMap();
 	
-	Set<T> getMaximalElements();
+	T getMaximum();
+	
+	void addAsNewMax(T newMax);
 	
 	Set<T> getMinimalElements();
 	
 	Set<ITree<T>> getAllMaxSpanningTrees();
 	
-	void addAsMaximum(T max);
-	
-	IRelation<T> restrictTo(Set<T> subset);
+	IUpperSemiLattice<T> getRestrictionTo(Set<T> subset);
 
 }

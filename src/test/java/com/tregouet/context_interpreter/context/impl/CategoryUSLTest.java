@@ -18,8 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
-import com.tregouet.context_interpreter.context.ILatticeBasedPOCat;
-import com.tregouet.context_interpreter.context.IPosetOfCategories;
+import com.tregouet.context_interpreter.context.ICategoryLattice;
+import com.tregouet.context_interpreter.context.ICategoryUSL;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
@@ -30,22 +30,22 @@ import com.tregouet.context_interpreter.io.inputs.impl.GenericFileReader;
 import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
 
 @SuppressWarnings("unused")
-public class PosetOfCategoriesTest {
+public class CategoryUSLTest {
 
 	private static Path shapes3 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes3.txt");
 	private static Path shapes2 = Paths.get(".", "src", "test", "java", "files_used_for_tests", "shapes2.txt");
 	List<IContextObject> shapes3Obj;
-	ILatticeBasedPOCat catRel3;
+	ICategoryLattice catRel3;
 	List<IContextObject> shapes2Obj;
-	ILatticeBasedPOCat catRel2;
+	ICategoryLattice catRel2;
 	
 	@SuppressWarnings("unused")
 	@Before
 	public void setUp() throws Exception {
 		shapes3Obj = GenericFileReader.getContextObjects(shapes3);
-		catRel3 = new LatticeBasedPOCat(shapes3Obj);
+		catRel3 = new CategoryLattice(shapes3Obj);
 		shapes2Obj = GenericFileReader.getContextObjects(shapes2);
-	catRel2 = new LatticeBasedPOCat(shapes2Obj);
+	catRel2 = new CategoryLattice(shapes2Obj);
 	}
 
 	@Test
@@ -176,7 +176,7 @@ public class PosetOfCategoriesTest {
 		assertTrue(catRel2.buildSuccessorRelationGraph("succ2"));
 	}	
 	
-	private void printCategories(IPosetOfCategories catRel) {
+	private void printCategories(ICategoryUSL catRel) {
 		int maxRank = catRel.getAcceptCategory().rank();
 		System.out.println("**********NEW SET OF CATEGORIES**********" + System.lineSeparator());
 		for (int i = 0 ; i <= maxRank ; i++) {

@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.tregouet.context_interpreter.context.ITree;
 
-public class Tree<T> extends Relation<T> implements ITree<T> {
+public class Tree<T> extends UpperSemiLattice<T> implements ITree<T> {
 
 	private final T root;
 	private final Set<T> leaves;
