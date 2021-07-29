@@ -29,7 +29,7 @@ public class AbstractConstruct implements IConstruct {
 		prog = new ArrayList<ISymbol>();
 		for (String symString : progStrings) {
 			if (symString.equals(ISymbolSeq.PLACEHOLDER))
-				prog.add(new Variable(Variable.DEFERRED_NAMING));
+				prog.add(new Variable(AVariable.DEFERRED_NAMING));
 			else prog.add(new Terminal(symString));
 		}
 		int nbOfTerminals = 0;
@@ -57,10 +57,12 @@ public class AbstractConstruct implements IConstruct {
 		return true;
 	}
 
+	@Override
 	public Iterator<ISymbol> getIteratorOverSymbols(){
 		return prog.iterator();
 	}
 	
+	@Override
 	public List<ISymbol> getListOfSymbols(){
 		return prog;
 	}
@@ -78,10 +80,12 @@ public class AbstractConstruct implements IConstruct {
 		return result;
 	}
 	
+	@Override
 	public boolean isAbstract() {
 		return true;
 	}
 
+	@Override
 	public boolean meets(IConstruct constraint) {
 		if (prog.size() > constraint.getListOfSymbols().size()) {
 			List<ISymbol> constructSymbols = this.getListOfSymbols();
@@ -106,6 +110,7 @@ public class AbstractConstruct implements IConstruct {
 		}
 	}
 	
+	@Override
 	public List<String> toListOfStringsWithPlaceholders(){
 		List<String> list = new ArrayList<String>();
 		for (ISymbol sym : prog) {

@@ -28,8 +28,7 @@
     	<groupId>com.tregouet</groupId>
     	<artifactId>subseq_finder</artifactId>
     	<version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    
+    </dependency>    
     <dependency>
 		<groupId>org.jgrapht</groupId>
 		<artifactId>jgrapht-core</artifactId>
@@ -53,6 +52,6 @@
 	    <artifactId>logback-classic</artifactId>
 	    <version>1.2.3</version>
 	</dependency>
-	
+
   </dependencies>
 </project>

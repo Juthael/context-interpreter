@@ -9,7 +9,9 @@ public interface ICategoryLattice extends ICategoryUSL {
 	
 	Set<ICategory> getAllCategoriesExceptLatticeMinimum();
 	
-	Map<ICategory, Set<ICategory>> getLatticeSuccRel();
+	Set<ICategory> getLattice();
+	
+	Set<ICategory> getLatticeAbstCategories();
 	
 	Set<ICategory> getLatticeAtoms();
 	
@@ -17,12 +19,10 @@ public interface ICategoryLattice extends ICategoryUSL {
 	
 	ICategory getLatticeMin();
 	
-	Set<ICategory> getLattice();
-	
-	Set<ICategory> getLatticeAbstCategories();
+	Map<ICategory, Set<ICategory>> getLatticeSuccRel();
 	
 	IPOCLooselyRestricted getLooselyRestrictedPosetOfConstructs();
 	
-	Set<ICategoryTree> getTreesOfCategories();
+	Set<ICategoryTree> getCategoryTrees();
 
 }

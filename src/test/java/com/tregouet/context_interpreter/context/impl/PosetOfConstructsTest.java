@@ -19,10 +19,10 @@ import com.tregouet.context_interpreter.context.ICategoryLattice;
 import com.tregouet.context_interpreter.context.IPOCLooselyRestricted;
 import com.tregouet.context_interpreter.context.ICategoryUSL;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
-import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.io.inputs.impl.GenericFileReader;
+import com.tregouet.root_to_leaves.data.IUpperSemiLattice;
 
 public class PosetOfConstructsTest {
 

@@ -25,6 +25,7 @@ public class Category implements ICategory {
 		this.extent = extent;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -48,10 +49,12 @@ public class Category implements ICategory {
 		return true;
 	}
 
+	@Override
 	public Set<IContextObject> getExtent() {
 		return extent;
 	}
 
+	@Override
 	public Set<IConstruct> getIntent() {
 		return intent;
 	}
@@ -69,18 +72,22 @@ public class Category implements ICategory {
 		return result;
 	}
 
+	@Override
 	public int rank() {
 		return rank;
 	}
 
+	@Override
 	public void setRank(int maxPathLengthFromMin) {
 		rank = maxPathLengthFromMin;
 	}
 
+	@Override
 	public void setType(int type) {
 		this.type = type;
 	}
 
+	@Override
 	public int type() {
 		return type;
 	}

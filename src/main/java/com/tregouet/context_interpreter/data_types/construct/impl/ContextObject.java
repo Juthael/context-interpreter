@@ -22,14 +22,17 @@ public class ContextObject implements IContextObject {
 			constructs.add(new Construct(constructAsList));
 	}
 
+	@Override
 	public List<IConstruct> getConstructs() {
 		return constructs;
 	}
 	
+	@Override
 	public String getID() {
 		return iD;
 	}
 	
+	@Override
 	public Iterator<IConstruct> getIteratorOnConstructs() {
 		return constructs.iterator();
 	}
@@ -42,6 +45,7 @@ public class ContextObject implements IContextObject {
 		return sB.toString();
 	}
 	
+	@Override
 	public List<ISymbolSeq> toSymbolSeqs(){
 		List<ISymbolSeq> symbolSeqs = new ArrayList<ISymbolSeq>();
 		for (IConstruct construct : constructs)

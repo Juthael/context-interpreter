@@ -11,8 +11,8 @@ import java.util.Set;
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.compiler.impl.Category;
 import com.tregouet.context_interpreter.context.ICategoryLattice;
-import com.tregouet.context_interpreter.context.IPOCLooselyRestricted;
 import com.tregouet.context_interpreter.context.ICategoryTree;
+import com.tregouet.context_interpreter.context.IPOCLooselyRestricted;
 import com.tregouet.context_interpreter.context.utils.IntentBldr;
 import com.tregouet.context_interpreter.data_types.construct.AVariable;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
@@ -21,6 +21,7 @@ import com.tregouet.context_interpreter.data_types.construct.ISymbol;
 import com.tregouet.context_interpreter.data_types.construct.impl.AbstractConstruct;
 import com.tregouet.context_interpreter.data_types.construct.impl.Terminal;
 import com.tregouet.context_interpreter.data_types.construct.impl.Variable;
+import com.tregouet.context_interpreter.data_types.representation.ITree;
 import com.tregouet.subseq_finder.ISubseqFinder;
 import com.tregouet.subseq_finder.ISymbolSeq;
 import com.tregouet.subseq_finder.impl.SubseqFinder;
@@ -52,24 +53,6 @@ public class CategoryLattice extends CategoryUSL implements ICategoryLattice {
 	}
 	
 	@Override
-	public Map<ICategory, Set<ICategory>> getLatticeSuccRel() {
-		Map<ICategory, Set<ICategory>> latticeSuccRel =	relation.getSuccRelationMap();
-		latticeSuccRel.remove(accept);
-		latticeSuccRel.remove(preAccept);
-		return latticeSuccRel;
-	}
-	
-	@Override
-	public ICategory getLatticeMax() {
-		return latticeMax;
-	}
-	
-	@Override
-	public ICategory getLatticeMin() {
-		return latticeMin;
-	}
-	
-	@Override
 	public Map<IConstruct, ICategory> getConstructToCategoryMap() {
 		//all categories but lattice minimum
 		Set<ICategory> allCategoriesExceptMinimum = relation.getSet();
@@ -81,21 +64,39 @@ public class CategoryLattice extends CategoryUSL implements ICategoryLattice {
 			}
 		}
 		return constructToCategory;
-	}	
+	}
 	
 	@Override
 	public Set<ICategory> getLattice(){
 		return lattice;
-	}	
-
+	}
+	
 	@Override
 	public Set<ICategory> getLatticeAbstCategories(){
 		return latticeAbstCat;
 	}
-
+	
 	@Override
 	public Set<ICategory> getLatticeAtoms() {
 		return latticeObj;
+	}	
+	
+	@Override
+	public ICategory getLatticeMax() {
+		return latticeMax;
+	}	
+
+	@Override
+	public ICategory getLatticeMin() {
+		return latticeMin;
+	}
+
+	@Override
+	public Map<ICategory, Set<ICategory>> getLatticeSuccRel() {
+		Map<ICategory, Set<ICategory>> latticeSuccRel =	relation.getSuccRelationMap();
+		latticeSuccRel.remove(accept);
+		latticeSuccRel.remove(preAccept);
+		return latticeSuccRel;
 	}
 
 	@Override
@@ -109,19 +110,19 @@ public class CategoryLattice extends CategoryUSL implements ICategoryLattice {
 	}
 	
 	@Override
-	public Set<ICategoryTree> getTreesOfCategories() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	private Set<Map<ICategory, Set<ICategory>>> getSubTreesFrom(ICategory category, Set<ICategory> explorableLowerSet) {
-		return null;
-	}
-	
-	private Set<ICategory> getSuccessorsInSpecifiedSubset(ICategory cat, Set<ICategory> subset){
-		Set<ICategory> successorsInSubSet = getSuccessors(cat);
-		successorsInSubSet.retainAll(subset);
-		return successorsInSubSet;
+	public Set<ICategoryTree> getCategoryTrees() {
+		Set<ICategoryTree> catTrees = new HashSet<ICategoryTree>();
+		Map<ICategory, Set<ICategory>> restrictedMap = relation.getRelationMap();
+		restrictedMap.remove(latticeMin);
+		for (Set<ICategory> value : restrictedMap.values())
+			value.remove(latticeMin);
+		IUpperSemiLattice<ICategory> restrictedRel = new UpperSemiLattice<ICategory>(restrictedMap);
+		ITreeFinder<ICategory> tF = new RootToLeavesTreeFinderMap<>();
+		tF.input(restrictedRel);
+		Set<ITree<ICategory>> treeRelations = tF.output();
+		for (ITree<ICategory> treeRel : treeRelations)
+			catTrees.add(new CategoryTree(objects, treeRel));
+		return catTrees;
 	}
 	
 	private void addAcceptAndPreAcceptCatToRelation() {
@@ -199,7 +200,7 @@ public class CategoryLattice extends CategoryUSL implements ICategoryLattice {
 	        powerSet.add(subset);
 	    }
 	    return powerSet;
-	}	
+	}
 	
 	private void instantiateAcceptCategory() {
 		ISymbol variable = new Variable(!AVariable.DEFERRED_NAMING);

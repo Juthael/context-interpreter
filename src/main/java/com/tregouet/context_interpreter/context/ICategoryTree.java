@@ -6,12 +6,12 @@ import com.tregouet.context_interpreter.compiler.ICategory;
 
 public interface ICategoryTree extends ICategoryUSL {
 	
-	ICategory getRoot();
+	boolean genusOf(ICategory cat1, ICategory cat2);
 	
 	Set<ICategory> getLeaves();
 	
-	boolean superCatOf(ICategory aSuperCat, ICategory aSubCat);
+	ICategory getRoot();
 	
-	boolean genusOf(ICategory theLeastSuperCat, ICategory aSubCat);
+	boolean superCatOf(ICategory cat1, ICategory cat2);
 
 }

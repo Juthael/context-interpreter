@@ -10,8 +10,9 @@ import java.util.Set;
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.context.ICategoryUSL;
 import com.tregouet.context_interpreter.context.IPosetOfConstructs;
-import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
+import com.tregouet.root_to_leaves.data.IUpperSemiLattice;
+import com.tregouet.root_to_leaves.data.impl.map.UpperSemiLattice;
 
 public abstract class PosetOfConstructs implements IPosetOfConstructs {
 
@@ -46,7 +47,7 @@ public abstract class PosetOfConstructs implements IPosetOfConstructs {
 
 	@Override
 	public Set<IConstruct> getLowerBounds(IConstruct construct) {
-		return relation.get(construct);
+		return relation.getStrictLowerBounds(construct);
 	}
 
 	@Override
@@ -76,7 +77,7 @@ public abstract class PosetOfConstructs implements IPosetOfConstructs {
 
 	@Override
 	public Set<List<IConstruct>> getSpanningChains() {
-		return relation.getSpanningChainsFrom(getMaximum());
+		return relation.getMaxChainsFrom(getMaximum());
 	}
 	
 	@Override

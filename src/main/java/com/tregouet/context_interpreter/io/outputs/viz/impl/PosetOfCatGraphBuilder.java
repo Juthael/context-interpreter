@@ -18,7 +18,6 @@ import org.jgrapht.nio.dot.DOTExporter;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
 import com.tregouet.context_interpreter.data_types.construct.IConstruct;
-import com.tregouet.context_interpreter.data_types.construct.IContextObject;
 import com.tregouet.context_interpreter.io.outputs.exceptions.VisualizationException;
 import com.tregouet.context_interpreter.io.outputs.viz.IPosetOfCatGraphBuilder;
 

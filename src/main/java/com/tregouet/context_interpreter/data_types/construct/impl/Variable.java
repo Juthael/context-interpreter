@@ -31,10 +31,12 @@ public class Variable extends AVariable {
 		return true;
 	}
 
+	@Override
 	public int getAssignmentCount() {
 		return assignments;
 	}
 	
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -47,10 +49,12 @@ public class Variable extends AVariable {
 		return result;
 	}
 	
+	@Override
 	public void incAssignmentCount() {
 		assignments++;
 	}
 
+	@Override
 	public void setName() {
 		name = provideName();
 	}

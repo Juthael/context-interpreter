@@ -1,4 +1,4 @@
-package com.tregouet.context_interpreter.context.impl;
+package com.tregouet.context_interpreter.context.utils;
 
 import static org.junit.Assert.assertTrue;
 

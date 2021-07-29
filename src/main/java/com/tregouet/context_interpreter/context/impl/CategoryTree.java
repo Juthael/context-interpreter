@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import com.tregouet.context_interpreter.compiler.ICategory;
-import com.tregouet.context_interpreter.context.IUpperSemiLattice;
 import com.tregouet.context_interpreter.context.ICategoryTree;
-import com.tregouet.context_interpreter.context.ITree;
 import com.tregouet.context_interpreter.data_types.construct.IContextObject;
+import com.tregouet.context_interpreter.data_types.representation.ITree;
 
 public class CategoryTree extends CategoryUSL implements ICategoryTree {
 	
@@ -28,33 +27,23 @@ public class CategoryTree extends CategoryUSL implements ICategoryTree {
 	}
 
 	@Override
-	public ICategory getRoot() {
-		return root;
+	public boolean genusOf(ICategory theLeastSuperCat, ICategory aSubCat) {
+		return relation.getPredecessorsOf(aSubCat).contains(theLeastSuperCat);
 	}
 	
-	@Override
-	public ICategory getAcceptCategory() {
-		return accept;
-	}	
-	
-	@Override
-	public ICategory getPreAcceptCategory() {
-		return preAccept;
-	}	
-
 	@Override
 	public Set<ICategory> getLeaves() {
 		return leaves;
 	}
 
 	@Override
-	public boolean superCatOf(ICategory aSuperCat, ICategory aSubCat) {
-		return relation.get(aSuperCat).contains(aSubCat);
+	public ICategory getRoot() {
+		return root;
 	}
 
 	@Override
-	public boolean genusOf(ICategory theLeastSuperCat, ICategory aSubCat) {
-		return relation.getPredecessorsOf(theLeastSuperCat).contains(aSubCat);
+	public boolean superCatOf(ICategory aSuperCat, ICategory aSubCat) {
+		return relation.getStrictLowerBounds(aSuperCat).contains(aSubCat);
 	}
 
 }
